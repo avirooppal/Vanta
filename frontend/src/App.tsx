@@ -1,15 +1,17 @@
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./components/ui/button";
+import { ResearchConsole } from "./components/ResearchConsole";
 
 const videoSource =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4";
 
 const navLinks = [
   { label: "Product", href: "#product" },
+  { label: "Console", href: "#console" },
   { label: "Agents", href: "#agents" },
-  { label: "Graph", href: "#graph" },
   { label: "Quick Start", href: "#quick-start" },
+  { label: "Standalone View", href: "http://localhost:8000" },
 ];
 
 const features = [
@@ -19,26 +21,32 @@ const features = [
     body: "Search, Validate, Extract, Contradict, and Synthesize agents run multi-round loops until the research goal is satisfied.",
   },
   {
+    label: "Adaptive Research Modes",
+    title: "Study, Research, Brief, or Deep.",
+    body: "Switch between Study mode (pedagogical Feynman breakdowns, quizzes, glossaries), Executive Briefs (BLUF), and Deep Academic dives.",
+  },
+  {
     label: "Persistent Knowledge Graph",
     title: "Every useful fact compounds.",
     body: "Extracted facts are embedded into PostgreSQL with pgvector, making prior research sessions instantly searchable.",
   },
   {
     label: "Self-Hosted Privacy",
-    title: "Deep research inside your own perimeter.",
+    title: "Deep research inside your perimeter.",
     body: "Deploy with Docker in your cloud and bring keys for OpenAI, Anthropic, Gemini, vLLM, or Ollama.",
   },
 ];
 
-const deploySnippet = `git clone https://github.com/avirooppal/Vanta-Deep-Research-API && \
-cd Vanta-Deep-Research-API && \
-cp .env.example .env && \
-cd deploy && \
+const deploySnippet = `git clone https://github.com/avirooppal/Vanta-Deep-Research-API && \\
+cd Vanta-Deep-Research-API && \\
+cp .env.example .env && \\
+cd deploy && \\
 docker compose up -d --build`;
 
 const cliSnippet = `uv run python cli.py submit "What are the latest advancements in solid-state batteries?" \\
-  --api-key "sk-..." \\
-  --max-rounds 2`;
+  --mode study \\
+  --api-key "sk-..."`;
+
 
 function App() {
   return (
@@ -90,15 +98,15 @@ function App() {
               height="48"
             />
           </a>
-          <Button size="nav" onClick={() => (window.location.href = "#quick-start")}>
-            Run Vanta
+          <Button size="nav" onClick={() => (window.location.href = "#console")}>
+            Launch Console
           </Button>
         </div>
       </nav>
 
       <section
         id="product"
-        className="relative z-10 mx-auto flex min-h-[calc(100vh-96px)] max-w-7xl flex-col items-center justify-center px-6 pb-32 pt-24 text-center"
+        className="relative z-10 mx-auto flex min-h-[calc(100vh-96px)] max-w-7xl flex-col items-center justify-center px-6 pb-24 pt-24 text-center"
       >
         <p className="animate-fade-rise text-sm font-medium uppercase tracking-[0.32em] text-muted-foreground">
           Privacy-first Research-as-a-Service API
@@ -123,17 +131,22 @@ function App() {
           <Button
             size="hero"
             className="cursor-pointer"
-            onClick={() => (window.location.href = "#quick-start")}
+            onClick={() => (window.location.href = "#console")}
           >
-            Quick Start
+            Launch Console
           </Button>
           <a
-            href="#agents"
+            href="#quick-start"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            Explore the agent loop
+            Quick Start & CLI
           </a>
         </div>
+      </section>
+
+      {/* Interactive Research Console Section */}
+      <section id="console" className="relative z-10 mx-auto max-w-7xl px-6 pb-28">
+        <ResearchConsole />
       </section>
 
       <section

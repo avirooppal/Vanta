@@ -2,6 +2,7 @@ from core.llm.client import LLMClient
 from core.llm.types import Message as LLMMessage
 from core.research.state import ValidatedSource, Finding
 from core.research.agents.base import BaseAgent
+from core.research.optimizer import compress_source_text
 import json
 
 EXTRACTOR_PROMPT = """You are a Fact Extraction Agent.
@@ -17,14 +18,19 @@ class ExtractorAgent(BaseAgent):
     def __init__(self, llm: LLMClient):
         super().__init__(name="ExtractorAgent", llm=llm)
 
-    async def run(self, source: ValidatedSource, question: str, round_n: int, memory=None) -> list[Finding]:
+    async def run(self, source: ValidatedSource, question: str, round_n: int, memory=None, mode_config=None) -> list[Finding]:
         memory_context = ""
         if memory:
             prev_claims = await memory.search_memory(question, limit=5)
             if prev_claims:
                 memory_context = "Previously extracted related claims:\n" + "\n".join(f"- [ID: {c['id']}] {c['fact']}" for c in prev_claims) + "\n\n"
                 
-        prompt = f"Question: {question}\n\n{memory_context}Text: {source.text[:8000]}"
+        focus_guidance = ""
+        if mode_config and hasattr(mode_config, "extraction_focus") and mode_config.extraction_focus:
+            focus_guidance = f"\nMode Extraction Focus: {mode_config.extraction_focus}\n"
+
+        compressed_text = compress_source_text(source.text, query=question, max_chars=3500)
+        prompt = f"Question: {question}\n\n{focus_guidance}{memory_context}Text:\n{compressed_text}"
         messages = [
             LLMMessage(role="system", content=EXTRACTOR_PROMPT),
             LLMMessage(role="user", content=prompt)

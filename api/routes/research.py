@@ -14,6 +14,7 @@ from arq import create_pool
 from core.queue.worker import get_redis_settings
 from core.llm.client import LLMClient
 from core.llm.types import LLMConfig, Message as LLMMessage
+from core.research.modes import get_mode_config, list_available_modes
 router = APIRouter(prefix="/v1", tags=["research"])
 
 
@@ -21,6 +22,7 @@ class ResearchRequest(BaseModel):
     query: str
     max_rounds: int = 3
     priority: int = 3
+    mode: Optional[str] = "research"
     model_override: Optional[str] = None
     metadata: Optional[dict] = None
     provider: Optional[str] = None
@@ -33,6 +35,7 @@ class ResearchResponse(BaseModel):
     id: str
     status: str
     query: str
+    mode: Optional[str] = "research"
     created_at: str
 
 
@@ -47,6 +50,11 @@ class ChatRequest(BaseModel):
     api_key: Optional[str] = None
     base_url: Optional[str] = None
     model: Optional[str] = None
+
+
+@router.get("/modes")
+async def get_modes():
+    return {"modes": list_available_modes()}
 
 
 @router.post("/research", response_model=ResearchResponse, status_code=202)
@@ -65,7 +73,10 @@ async def submit_research(body: ResearchRequest, request: Request):
     if body.model:
         final_backend["model"] = body.model
 
+    mode_cfg = get_mode_config(body.mode)
     metadata = body.metadata or {}
+    metadata["mode"] = mode_cfg.name
+
     if final_backend:
         if "api_key" in final_backend and final_backend["api_key"]:
             from core.security.encryption import encrypt
@@ -73,12 +84,16 @@ async def submit_research(body: ResearchRequest, request: Request):
             final_backend.pop("api_key", None)
         metadata["transient_backend"] = final_backend
 
+    rounds = body.max_rounds if body.max_rounds else mode_cfg.default_rounds
+    effective_rounds = min(rounds, mode_cfg.max_rounds_cap)
+
     async with get_db_session() as db:
         job = ResearchJob(
             id=job_id,
             query=body.query,
             status="queued",
-            max_rounds=min(body.max_rounds, 5),
+            mode=mode_cfg.name,
+            max_rounds=effective_rounds,
             priority=max(1, min(5, body.priority)),
             model_override=body.model_override,
             metadata_json=json.dumps(metadata) if metadata else None,
@@ -97,6 +112,7 @@ async def submit_research(body: ResearchRequest, request: Request):
         id=job_id,
         status="queued",
         query=body.query,
+        mode=mode_cfg.name,
         created_at=job.created_at.isoformat(),
     )
 
@@ -113,6 +129,7 @@ async def get_research_job(job_id: str, request: Request):
         "id": job.id,
         "status": job.status,
         "query": job.query,
+        "mode": getattr(job, "mode", None) or "research",
         "created_at": job.created_at.isoformat(),
         "started_at": job.started_at.isoformat() if job.started_at else None,
         "finished_at": job.finished_at.isoformat() if job.finished_at else None,

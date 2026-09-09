@@ -2,6 +2,7 @@ from core.llm.client import LLMClient
 from core.llm.types import Message as LLMMessage
 from core.research.state import ResearchState
 from core.research.agents.base import BaseAgent
+from core.research.optimizer import deduplicate_findings
 from dataclasses import dataclass
 
 @dataclass
@@ -27,7 +28,9 @@ class SynthesizerAgent(BaseAgent):
         total_chars = 0
         truncated = False
         
-        sorted_findings = sorted(enumerate(state.findings), key=lambda x: x[1].round_number, reverse=True)
+        # Deduplicate redundant findings to minimize token footprint
+        unique_findings = deduplicate_findings(state.findings)
+        sorted_findings = sorted(enumerate(unique_findings), key=lambda x: x[1].round_number, reverse=True)
         
         for i, f in sorted_findings:
             block = f"[{i+1}] {f.url}\n{f.facts}"
@@ -48,8 +51,12 @@ class SynthesizerAgent(BaseAgent):
             for c in state.contradictions:
                 findings_text += f"Conflict: {c.description} (Severity: {c.severity})\nResolution: {c.resolution_suggestion}\n\n"
 
+        system_prompt = SYNTHESIS_PROMPT
+        if hasattr(state, "mode_config") and state.mode_config and hasattr(state.mode_config, "synthesis_prompt") and state.mode_config.synthesis_prompt:
+            system_prompt = state.mode_config.synthesis_prompt
+
         messages = [
-            LLMMessage(role="system", content=SYNTHESIS_PROMPT),
+            LLMMessage(role="system", content=system_prompt),
             LLMMessage(role="user", content=f"Research question: {state.question}\n\nFindings:\n{findings_text}")
         ]
         

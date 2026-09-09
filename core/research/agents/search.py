@@ -16,8 +16,12 @@ class SearchAgent(BaseAgent):
     async def run(self, state: ResearchState) -> list[str]:
         findings_summary = "\n".join(f"- {f.facts[:200]}..." for f in state.findings[-5:]) if state.findings else "No findings yet."
         
+        strategy_guidance = ""
+        if hasattr(state, "mode_config") and state.mode_config:
+            strategy_guidance = f"\nMode: {state.mode_config.display_name}\nMode Strategy: {state.mode_config.search_strategy}\n"
+
         prompt = f"""
-Original Question: {state.question}
+Original Question: {state.question}{strategy_guidance}
 Recent Findings:
 {findings_summary}
 

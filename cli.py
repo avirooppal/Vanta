@@ -15,7 +15,7 @@ UNDERLINE = "\033[4m"
 END = "\033[0m"
 
 
-def request_api(url, method="GET", headers=None, data=None):
+def request_api(url, method="GET", headers=None, data=None, raise_on_error=False):
     if headers is None:
         headers = {}
     req = urllib.request.Request(url, headers=headers, method=method)
@@ -27,6 +27,8 @@ def request_api(url, method="GET", headers=None, data=None):
         with urllib.request.urlopen(req) as res:
             return res.status, json.loads(res.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
+        if raise_on_error:
+            raise
         try:
             err_body = json.loads(e.read().decode("utf-8"))
             detail = err_body.get("detail", str(e))
@@ -35,14 +37,16 @@ def request_api(url, method="GET", headers=None, data=None):
         print(f"{RED}{BOLD}API Error ({e.code}):{END} {detail}")
         sys.exit(1)
     except urllib.error.URLError as e:
+        if raise_on_error:
+            raise
         print(f"{RED}{BOLD}Connection Error:{END} {e.reason}")
         sys.exit(1)
 
 
-def submit_job(base_url, api_key, query, max_rounds, provider=None, base_url_override=None, model=None):
+def submit_job(base_url, api_key, query, max_rounds, mode="research", provider=None, base_url_override=None, model=None):
     url = f"{base_url.rstrip('/')}/v1/research"
     headers = {"Authorization": f"Bearer {api_key}"}
-    data = {"query": query, "max_rounds": max_rounds}
+    data = {"query": query, "max_rounds": max_rounds, "mode": mode}
     if provider:
         data["provider"] = provider
     if base_url_override:
@@ -50,7 +54,7 @@ def submit_job(base_url, api_key, query, max_rounds, provider=None, base_url_ove
     if model:
         data["model"] = model
 
-    print(f"\n{BLUE}{BOLD}Submitting research job...{END}")
+    print(f"\n{BLUE}{BOLD}Submitting research job [{mode.upper()} mode]...{END}")
     status, response = request_api(url, method="POST", headers=headers, data=data)
     if status == 202:
         job_id = response.get("id")
@@ -91,13 +95,38 @@ def poll_job(base_url, api_key, job_id):
         time.sleep(1)
 
 
+def list_modes_command(base_url):
+    url = f"{base_url.rstrip('/')}/v1/modes"
+    try:
+        status, res = request_api(url, method="GET", raise_on_error=True)
+        modes = res.get("modes", [])
+    except Exception:
+        # Fallback offline preset display
+        modes = [
+            {"mode": "research", "display_name": "Standard Research", "default_rounds": 3, "description": "Comprehensive analytical research with inline source citations."},
+            {"mode": "study", "display_name": "Study & Learn", "default_rounds": 2, "description": "Educational guide: core concepts explained simply, analogies, misconceptions, quiz, glossary."},
+            {"mode": "brief", "display_name": "Executive Brief", "default_rounds": 1, "description": "Rapid executive briefing: Bottom Line Up Front (BLUF), top takeaways, action items."},
+            {"mode": "deep", "display_name": "Deep Academic & Technical", "default_rounds": 4, "description": "Exhaustive academic deep dive: strict source trust, literature & contradiction matrix."},
+        ]
+
+    print(f"\n{BOLD}{UNDERLINE}AVAILABLE RESEARCH MODES:{END}\n")
+    for m in modes:
+        mode_id = m.get("mode")
+        name = m.get("display_name")
+        rounds = m.get("default_rounds")
+        desc = m.get("description")
+        print(f"  {GREEN}{BOLD}{mode_id:<10}{END} {BOLD}{name}{END} (default {rounds} round{'s' if rounds > 1 else ''})")
+        print(f"             {desc}\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Vanta Developer CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     submit_parser = subparsers.add_parser("submit", help="Submit a new research job")
     submit_parser.add_argument("query", type=str, help="The research question/query")
-    submit_parser.add_argument("--max-rounds", type=int, default=3, help="Max iterations of research (1-5)")
+    submit_parser.add_argument("--mode", type=str, default="research", choices=["research", "study", "brief", "deep"], help="Research mode: research (default), study, brief, deep")
+    submit_parser.add_argument("--max-rounds", type=int, default=None, help="Max iterations of research (1-5, defaults to mode preset)")
     submit_parser.add_argument("--api-key", type=str, required=True, help="API Key for authorization")
     submit_parser.add_argument("--api-url", type=str, default="http://localhost:8000", help="Base URL of Vanta")
     submit_parser.add_argument("--output", type=str, default=None, help="Save the output markdown report to a file")
@@ -105,7 +134,14 @@ def main():
     submit_parser.add_argument("--base-url", type=str, default=None, help="Optional LLM base URL override")
     submit_parser.add_argument("--model", type=str, default=None, help="Optional LLM model override")
 
+    modes_parser = subparsers.add_parser("modes", help="List available research modes")
+    modes_parser.add_argument("--api-url", type=str, default="http://localhost:8000", help="Base URL of Vanta")
+
     args = parser.parse_args()
+
+    if args.command == "modes":
+        list_modes_command(args.api_url)
+        return
 
     if args.command == "submit":
         job_id = submit_job(
@@ -113,6 +149,7 @@ def main():
             args.api_key,
             args.query,
             args.max_rounds,
+            mode=args.mode,
             provider=args.provider,
             base_url_override=args.base_url,
             model=args.model
@@ -124,7 +161,8 @@ def main():
         body_md = report.get("body_md", "")
         citations = report.get("citations", [])
 
-        print(f"\n{BOLD}{UNDERLINE}SUMMARY:{END}\n{summary}\n")
+        print(f"\n{BOLD}{UNDERLINE}MODE:{END} {args.mode.upper()}\n")
+        print(f"{BOLD}{UNDERLINE}SUMMARY:{END}\n{summary}\n")
         print(f"{BOLD}{UNDERLINE}REPORT OUTLINE:{END}\n")
 
         for line in body_md.splitlines():

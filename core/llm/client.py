@@ -3,10 +3,15 @@ from core.llm.providers.openai import call_openai
 from core.llm.providers.anthropic import call_anthropic
 
 
+import hashlib
+
 class LLMClient:
-    def __init__(self, config: LLMConfig, low_complexity_config: LLMConfig | None = None):
+    def __init__(self, config: LLMConfig, low_complexity_config: LLMConfig | None = None, enable_cache: bool = True):
         self.config = config
         self.low_complexity_config = low_complexity_config
+        self.enable_cache = enable_cache
+        self.cache: dict[str, LLMResponse] = {}
+        self.cache_hits = 0
         self.total_tokens_in = 0
         self.total_tokens_out = 0
         self.search_queries_issued = 0
@@ -16,12 +21,23 @@ class LLMClient:
         cfg = self.low_complexity_config if complexity == "low" and self.low_complexity_config else self.config
         provider = cfg.provider
 
+        cache_key = None
+        if self.enable_cache:
+            key_raw = f"{provider}:{cfg.model}:" + "|".join(f"{m.role}:{m.content}" for m in messages)
+            cache_key = hashlib.sha256(key_raw.encode("utf-8")).hexdigest()
+            if cache_key in self.cache:
+                self.cache_hits += 1
+                return self.cache[cache_key]
+
         if provider in ("openai", "openai_compatible", "azure_openai", "openrouter", "ollama"):
             res = await call_openai(messages, cfg)
         elif provider == "anthropic":
             res = await call_anthropic(messages, cfg)
         else:
             raise ValueError(f"Unsupported provider: {provider}")
+
+        if cache_key:
+            self.cache[cache_key] = res
 
         self.total_tokens_in += res.tokens_in
         self.total_tokens_out += res.tokens_out

@@ -2,7 +2,7 @@ import pytest
 import asyncio
 from unittest.mock import AsyncMock, patch
 from core.research.engine import run_research
-from core.research.synthesizer import ReportOutput
+from core.research.agents.synthesizer import ReportOutput
 from core.llm.types import LLMResponse
 from integrations.searxng import SearchResult
 from integrations.fetcher import FetchedPage
@@ -33,6 +33,36 @@ async def test_engine_returns_report():
 
 
 @pytest.mark.asyncio
+async def test_engine_supports_study_mode():
+    mock_llm = AsyncMock()
+    mock_llm.complete.side_effect = [
+        LLMResponse(content='["study query one"]', model="gpt-4o", tokens_in=10, tokens_out=10),
+        LLMResponse(content='{"trust_score": 85, "flags": "None"}', model="gpt-4o", tokens_in=10, tokens_out=10),
+        LLMResponse(content='[{"facts": "Quantum computing uses qubits", "trust_score": 80}]', model="gpt-4o", tokens_in=20, tokens_out=10),
+        LLMResponse(
+            content="# Quantum Computing - Study Guide\n\n## 1. Overview\nQubits explain quantum.\n\n## Sources\n[1] https://a.com",
+            model="gpt-4o", tokens_in=100, tokens_out=50
+        ),
+    ]
+
+    mock_search_results = [SearchResult(url="https://a.com", title="Quantum", snippet="Intro to qubits")]
+    mock_page = FetchedPage(url="https://a.com", title="Quantum", text="Quantum computing uses qubits and superposition.", success=True)
+
+    with patch("core.research.engine.search_searxng", AsyncMock(return_value=mock_search_results)), \
+         patch("core.research.engine.fetch_url", AsyncMock(return_value=mock_page)):
+        report = await run_research(
+            "Explain quantum computing",
+            mock_llm,
+            "http://searxng:8080",
+            max_rounds=2,
+            mode="study",
+        )
+
+    assert isinstance(report, ReportOutput)
+    assert "Study Guide" in report.body_md or "Overview" in report.body_md
+
+
+@pytest.mark.asyncio
 async def test_engine_respects_cancellation():
     cancelled = asyncio.Event()
     cancelled.set()
@@ -45,3 +75,4 @@ async def test_engine_respects_cancellation():
 
     assert report.query == "What is X?"
     mock_llm.complete.assert_not_called()
+

@@ -3,6 +3,7 @@ from core.llm.types import Message as LLMMessage
 from integrations.fetcher import FetchedPage
 from core.research.state import ValidatedSource
 from core.research.agents.base import BaseAgent
+from core.research.optimizer import heuristic_validate_domain
 import json
 
 VALIDATOR_PROMPT = """You are a Source Validation Agent.
@@ -18,7 +19,25 @@ class ValidatorAgent(BaseAgent):
         super().__init__(name="ValidatorAgent", llm=llm)
 
     async def run(self, page: FetchedPage) -> ValidatedSource:
-        prompt = f"URL: {page.url}\nTitle: {page.title}\nSnippet: {page.text[:1000]}"
+        # Zero-token heuristic check for known authoritative or spam domains
+        heuristic = heuristic_validate_domain(page.url)
+        if heuristic is not None:
+            trust_score, flags = heuristic
+            source = ValidatedSource(
+                url=page.url,
+                title=page.title,
+                text=page.text,
+                trust_score=trust_score,
+                flags=flags
+            )
+            await self.publish("validator.source_validated", {
+                "url": source.url,
+                "trust_score": source.trust_score,
+                "flags": source.flags
+            })
+            return source
+
+        prompt = f"URL: {page.url}\nTitle: {page.title}\nSnippet: {page.text[:800]}"
         messages = [
             LLMMessage(role="system", content=VALIDATOR_PROMPT),
             LLMMessage(role="user", content=prompt)

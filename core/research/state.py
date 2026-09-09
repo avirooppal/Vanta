@@ -37,3 +37,6 @@ class ResearchState:
     report_md: Optional[str] = None
     citations: list[dict] = field(default_factory=list)
     is_done: bool = False
+    mode: str = "research"
+    mode_config: Optional[object] = None
+

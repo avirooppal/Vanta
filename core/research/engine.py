@@ -11,6 +11,7 @@ from core.research.agents.synthesizer import SynthesizerAgent
 from core.research.agents.citation_verifier import CitationVerifierAgent
 from integrations.searxng import search_searxng
 from integrations.fetcher import fetch_url
+from core.research.modes import get_mode_config, ModeConfig
 from core.config import settings
 
 class RoundResult:
@@ -34,8 +35,16 @@ async def run_research(
     on_progress: ProgressCallback = _noop_progress,
     cancelled: asyncio.Event | None = None,
     job_id: str | None = None,
+    mode: str = "research",
 ):
-    state = ResearchState(question=question, max_rounds=max_rounds)
+    mode_config = get_mode_config(mode)
+    effective_rounds = min(max_rounds, mode_config.max_rounds_cap) if max_rounds else mode_config.default_rounds
+    state = ResearchState(
+        question=question,
+        max_rounds=effective_rounds,
+        mode=mode_config.name,
+        mode_config=mode_config,
+    )
     sem = asyncio.Semaphore(settings.extraction_concurrency)
     
     from core.research.memory import MemoryStore
@@ -87,11 +96,13 @@ async def run_research(
                 
                 # Validator Agent
                 validated_source = await validator_agent.run(page)
-                if validated_source.trust_score < 30:
+                if validated_source.trust_score < mode_config.min_trust_score:
                     return None  # Skip low trust sources
                     
                 # Extractor Agent
-                findings = await extractor_agent.run(validated_source, question, state.current_round, memory)
+                findings = await extractor_agent.run(
+                    validated_source, question, state.current_round, memory, mode_config=mode_config
+                )
                 return (validated_source, findings)
 
         extract_tasks = [process_url(url) for url in urls[:15]]

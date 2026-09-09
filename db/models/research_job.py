@@ -15,6 +15,7 @@ class ResearchJob(Base):
     max_rounds: Mapped[int] = mapped_column(Integer, default=3)
     progress_pct: Mapped[int] = mapped_column(Integer, default=0)
     category: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    mode: Mapped[Optional[str]] = mapped_column(String, default="research", nullable=True)
     model_override: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     error: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     metadata_json: Mapped[Optional[str]] = mapped_column(Text, nullable=True)

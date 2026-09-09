@@ -115,6 +115,15 @@ async def run_research_job(ctx: dict, job_id: str) -> None:
             llm.sources_fetched = 0
 
 
+            job_mode = getattr(job, "mode", None)
+            if not job_mode and job.metadata_json:
+                try:
+                    meta_dict = json.loads(job.metadata_json)
+                    job_mode = meta_dict.get("mode")
+                except Exception:
+                    pass
+            job_mode = job_mode or "research"
+
         report_output = await run_research(
             question=job.query,
             llm=llm,
@@ -122,6 +131,8 @@ async def run_research_job(ctx: dict, job_id: str) -> None:
             max_rounds=job.max_rounds,
             on_progress=on_progress,
             cancelled=cancel_event,
+            job_id=job_id,
+            mode=job_mode,
         )
 
         async with get_db_session() as db:

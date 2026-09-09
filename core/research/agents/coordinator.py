@@ -27,8 +27,15 @@ class CoordinatorAgent(BaseAgent):
 
         findings_summary = "\n".join(f"- {f.facts[:200]}..." for f in state.findings[:10])
         
+        mode_name = state.mode or "research"
+        mode_desc = ""
+        if hasattr(state, "mode_config") and state.mode_config:
+            mode_desc = f"\nMode: {state.mode_config.display_name} ({state.mode_config.name}) - {state.mode_config.description}"
+        else:
+            mode_desc = f"\nMode: {mode_name}"
+
         prompt = f"""
-Query: {state.question}
+Query: {state.question}{mode_desc}
 Round: {state.current_round} / {state.max_rounds}
 Total Findings: {len(state.findings)}
 Sample Findings:

@@ -1,0 +1,712 @@
+{
+  "communities": {
+    "0": [
+      "api_middleware_audit_log",
+      "api_middleware_audit_log_audit_log_middleware",
+      "api_middleware_audit_log_py_request",
+      "api_routes_reports",
+      "api_routes_reports_export_report",
+      "api_routes_reports_py_get",
+      "api_routes_reports_py_request",
+      "api_routes_research",
+      "api_routes_research_cancel_research_job",
+      "api_routes_research_chat_with_report",
+      "api_routes_research_chatmessage",
+      "api_routes_research_chatrequest",
+      "api_routes_research_get_research_job",
+      "api_routes_research_py_basemodel",
+      "api_routes_research_py_delete",
+      "api_routes_research_py_get",
+      "api_routes_research_py_post",
+      "api_routes_research_py_request",
+      "api_routes_research_researchrequest",
+      "api_routes_research_researchresponse",
+      "api_routes_research_search_knowledge_graph",
+      "api_routes_research_stream_research_progress",
+      "api_routes_research_submit_research",
+      "api_routes_sources",
+      "api_routes_sources_get_research_sources",
+      "api_routes_sources_py_get",
+      "api_routes_sources_py_request",
+      "core_config",
+      "core_queue_tasks",
+      "core_queue_tasks_cleanup_audit_log",
+      "core_queue_tasks_deliver_webhook_job",
+      "core_queue_tasks_run_research_job",
+      "core_queue_worker",
+      "core_queue_worker_get_redis_settings",
+      "core_queue_worker_workersettings",
+      "core_research_memory",
+      "core_webhooks_dispatcher",
+      "core_webhooks_dispatcher_fire_webhook",
+      "db_engine",
+      "db_engine_base",
+      "db_migrations_env",
+      "db_migrations_env_do_run_migrations",
+      "db_migrations_env_run_migrations_offline",
+      "db_migrations_env_run_migrations_online",
+      "db_models_audit_log",
+      "db_models_audit_log_auditlog",
+      "db_models_claim",
+      "db_models_claim_claim",
+      "db_models_report",
+      "db_models_report_report",
+      "db_models_research_job",
+      "db_models_research_job_researchjob",
+      "db_models_source",
+      "db_models_source_source",
+      "db_models_usage_record",
+      "db_models_usage_record_usagerecord",
+      "db_models_webhook",
+      "db_session",
+      "db_session_get_db_session",
+      "declarativebase",
+      "redissettings",
+      "scripts_reset_db",
+      "scripts_reset_db_main",
+      "tests_unit_test_queue",
+      "tests_unit_test_queue_test_task_importable",
+      "tests_unit_test_queue_test_worker_settings_importable",
+      "tests_unit_test_webhook_delivery",
+      "tests_unit_test_webhook_delivery_py_asyncio",
+      "tests_unit_test_webhook_delivery_test_webhook_delivery_failure_retry",
+      "tests_unit_test_webhook_delivery_test_webhook_delivery_success"
+    ],
+    "1": [
+      "core_llm_client_llmclient",
+      "core_research_agents_base",
+      "core_research_agents_base_baseagent",
+      "core_research_agents_base_baseagent_init",
+      "core_research_agents_base_baseagent_publish",
+      "core_research_agents_base_baseagent_register_tool",
+      "core_research_agents_base_baseagent_run",
+      "core_research_agents_base_rationale_27",
+      "core_research_agents_citation_verifier",
+      "core_research_agents_citation_verifier_citationverifieragent",
+      "core_research_agents_citation_verifier_citationverifieragent_init",
+      "core_research_agents_citation_verifier_citationverifieragent_run",
+      "core_research_agents_citation_verifier_verify_citations",
+      "core_research_agents_contradiction",
+      "core_research_agents_contradiction_contradictionagent",
+      "core_research_agents_contradiction_contradictionagent_init",
+      "core_research_agents_contradiction_contradictionagent_run",
+      "core_research_agents_contradiction_detect_contradictions",
+      "core_research_agents_coordinator",
+      "core_research_agents_coordinator_coordinate",
+      "core_research_agents_coordinator_coordinatoragent",
+      "core_research_agents_coordinator_coordinatoragent_init",
+      "core_research_agents_coordinator_coordinatoragent_run",
+      "core_research_agents_coordinator_rationale_21",
+      "core_research_agents_extractor",
+      "core_research_agents_extractor_extract_claims",
+      "core_research_agents_extractor_extractoragent",
+      "core_research_agents_extractor_extractoragent_init",
+      "core_research_agents_extractor_extractoragent_run",
+      "core_research_agents_message_bus",
+      "core_research_agents_message_bus_messagebus",
+      "core_research_agents_message_bus_messagebus_init",
+      "core_research_agents_message_bus_messagebus_publish",
+      "core_research_agents_message_bus_messagebus_subscribe",
+      "core_research_agents_message_bus_rationale_5",
+      "core_research_agents_search",
+      "core_research_agents_search_generate_queries",
+      "core_research_agents_search_searchagent",
+      "core_research_agents_search_searchagent_init",
+      "core_research_agents_search_searchagent_run",
+      "core_research_agents_synthesizer",
+      "core_research_agents_synthesizer_reportoutput",
+      "core_research_agents_synthesizer_synthesize",
+      "core_research_agents_synthesizer_synthesizeragent",
+      "core_research_agents_synthesizer_synthesizeragent_init",
+      "core_research_agents_synthesizer_synthesizeragent_run",
+      "core_research_agents_validator",
+      "core_research_agents_validator_validate_source",
+      "core_research_agents_validator_validatoragent",
+      "core_research_agents_validator_validatoragent_init",
+      "core_research_agents_validator_validatoragent_run",
+      "core_research_engine",
+      "core_research_engine_noop_progress",
+      "core_research_engine_roundresult",
+      "core_research_engine_roundresult_init",
+      "core_research_engine_run_research",
+      "core_research_memory_memorystore",
+      "core_research_memory_memorystore_init",
+      "core_research_memory_memorystore_search_global_memory",
+      "core_research_memory_memorystore_search_memory",
+      "core_research_state",
+      "core_research_state_contradiction",
+      "core_research_state_finding",
+      "core_research_state_researchstate",
+      "core_research_state_validatedsource",
+      "event",
+      "integrations_fetcher_fetchedpage",
+      "progresscallback"
+    ],
+    "2": [
+      "api_app",
+      "api_app_lifespan",
+      "api_app_py_get",
+      "api_app_py_request",
+      "api_app_read_index",
+      "api_app_request_id_middleware",
+      "api_middleware_auth",
+      "api_middleware_auth_auth_middleware",
+      "api_middleware_auth_py_request",
+      "api_middleware_auth_rationale_9",
+      "api_routes_health",
+      "api_routes_health_health_basic",
+      "api_routes_health_health_live",
+      "api_routes_health_health_ready",
+      "api_routes_health_py_get",
+      "api_routes_webhooks",
+      "api_routes_webhooks_create_webhook",
+      "api_routes_webhooks_delete_webhook",
+      "api_routes_webhooks_list_webhooks",
+      "api_routes_webhooks_py_basemodel",
+      "api_routes_webhooks_py_delete",
+      "api_routes_webhooks_py_get",
+      "api_routes_webhooks_py_post",
+      "api_routes_webhooks_py_request",
+      "api_routes_webhooks_webhookcreate",
+      "api_routes_webhooks_webhookresponse",
+      "core_logging",
+      "core_logging_get_logger",
+      "core_logging_jsonformatter",
+      "core_logging_jsonformatter_format",
+      "db_models_webhook_webhookendpoint",
+      "fastapi",
+      "logger",
+      "logrecord"
+    ],
+    "3": [
+      "core_llm_client",
+      "core_llm_client_llmclient_complete",
+      "core_llm_client_llmclient_embed",
+      "core_llm_client_llmclient_init",
+      "core_llm_providers_anthropic",
+      "core_llm_providers_anthropic_call_anthropic",
+      "core_llm_providers_openai",
+      "core_llm_providers_openai_call_openai",
+      "core_llm_providers_openai_embed_openai",
+      "core_llm_types",
+      "core_llm_types_llmconfig",
+      "core_llm_types_llmresponse",
+      "core_llm_types_message",
+      "tests_unit_test_anthropic_provider",
+      "tests_unit_test_anthropic_provider_py_asyncio",
+      "tests_unit_test_anthropic_provider_test_call_anthropic_parses_response",
+      "tests_unit_test_llm_client",
+      "tests_unit_test_llm_client_make_mock_client",
+      "tests_unit_test_llm_client_py_asyncio",
+      "tests_unit_test_llm_client_test_raises_on_unknown_provider",
+      "tests_unit_test_llm_client_test_routes_to_anthropic",
+      "tests_unit_test_llm_client_test_routes_to_openai",
+      "tests_unit_test_llm_client_test_routes_to_openrouter",
+      "tests_unit_test_llm_types",
+      "tests_unit_test_llm_types_test_llm_config_defaults",
+      "tests_unit_test_llm_types_test_message_creation",
+      "tests_unit_test_openai_provider",
+      "tests_unit_test_openai_provider_py_asyncio",
+      "tests_unit_test_openai_provider_test_call_openai_parses_response"
+    ],
+    "4": [
+      "integrations_fetcher",
+      "integrations_fetcher_fetch_url",
+      "integrations_fetcher_is_safe_url",
+      "integrations_searxng",
+      "integrations_searxng_search_searxng",
+      "integrations_searxng_searchresult",
+      "tests_unit_test_engine",
+      "tests_unit_test_engine_py_asyncio",
+      "tests_unit_test_engine_test_engine_respects_cancellation",
+      "tests_unit_test_engine_test_engine_returns_report",
+      "tests_unit_test_fetcher",
+      "tests_unit_test_fetcher_mock_fetch_client",
+      "tests_unit_test_fetcher_py_asyncio",
+      "tests_unit_test_fetcher_test_fetch_extracts_text",
+      "tests_unit_test_fetcher_test_fetch_handles_error",
+      "tests_unit_test_searxng",
+      "tests_unit_test_searxng_mock_searxng_client",
+      "tests_unit_test_searxng_py_asyncio",
+      "tests_unit_test_searxng_test_searxng_parses_results",
+      "tests_unit_test_searxng_test_searxng_respects_num_results"
+    ],
+    "5": [
+      "core_webhooks_signing",
+      "core_webhooks_signing_hmac_sign",
+      "tests_integration_test_api_routes",
+      "tests_integration_test_api_routes_auth_patches",
+      "tests_integration_test_api_routes_ctx",
+      "tests_integration_test_api_routes_make_mock_key",
+      "tests_integration_test_api_routes_make_mock_org",
+      "tests_integration_test_api_routes_py_asyncio",
+      "tests_integration_test_api_routes_rationale_16",
+      "tests_integration_test_api_routes_test_cancel_completed_job_returns_409",
+      "tests_integration_test_api_routes_test_export_md_returns_markdown",
+      "tests_integration_test_api_routes_test_get_job_returns_queued_status",
+      "tests_unit_test_sources",
+      "tests_unit_test_sources_py_asyncio",
+      "tests_unit_test_sources_test_get_sources_returns_list",
+      "tests_unit_test_webhooks",
+      "tests_unit_test_webhooks_py_asyncio",
+      "tests_unit_test_webhooks_test_hmac_signature",
+      "tests_unit_test_webhooks_test_webhook_crud"
+    ],
+    "6": [
+      "frontend_tsconfig_app",
+      "frontend_tsconfig_app_compileroptions",
+      "frontend_tsconfig_app_compileroptions_allowjs",
+      "frontend_tsconfig_app_compileroptions_allowsyntheticdefaultimports",
+      "frontend_tsconfig_app_compileroptions_esmoduleinterop",
+      "frontend_tsconfig_app_compileroptions_forceconsistentcasinginfilenames",
+      "frontend_tsconfig_app_compileroptions_isolatedmodules",
+      "frontend_tsconfig_app_compileroptions_jsx",
+      "frontend_tsconfig_app_compileroptions_lib",
+      "frontend_tsconfig_app_compileroptions_module",
+      "frontend_tsconfig_app_compileroptions_moduleresolution",
+      "frontend_tsconfig_app_compileroptions_noemit",
+      "frontend_tsconfig_app_compileroptions_resolvejsonmodule",
+      "frontend_tsconfig_app_compileroptions_skiplibcheck",
+      "frontend_tsconfig_app_compileroptions_strict",
+      "frontend_tsconfig_app_compileroptions_target",
+      "frontend_tsconfig_app_compileroptions_tsbuildinfofile",
+      "frontend_tsconfig_app_compileroptions_usedefineforclassfields",
+      "frontend_tsconfig_app_include"
+    ],
+    "7": [
+      "abc",
+      "core_plugins_base",
+      "core_plugins_base_baseextractorplugin",
+      "core_plugins_base_baseextractorplugin_extract",
+      "core_plugins_base_baseextractorplugin_name",
+      "core_plugins_base_basesearchplugin",
+      "core_plugins_base_basesearchplugin_name",
+      "core_plugins_base_basesearchplugin_search",
+      "core_plugins_base_rationale_13",
+      "core_plugins_base_rationale_23",
+      "core_plugins_base_rationale_28",
+      "core_plugins_base_rationale_8",
+      "core_plugins_registry",
+      "core_plugins_registry_pluginregistry",
+      "core_plugins_registry_pluginregistry_discover_plugins",
+      "core_plugins_registry_pluginregistry_init",
+      "core_plugins_registry_rationale_13"
+    ],
+    "8": [
+      "core_security_encryption",
+      "core_security_encryption_decrypt",
+      "core_security_encryption_encrypt",
+      "core_security_encryption_get_fernet",
+      "fernet",
+      "tests_integration_test_transient_backend",
+      "tests_integration_test_transient_backend_ctx",
+      "tests_integration_test_transient_backend_make_api_key",
+      "tests_integration_test_transient_backend_make_org",
+      "tests_integration_test_transient_backend_py_asyncio",
+      "tests_integration_test_transient_backend_test_submit_research_with_body_overrides",
+      "tests_integration_test_transient_backend_test_submit_research_with_openrouter_key",
+      "tests_integration_test_transient_backend_test_submit_research_with_transient_key",
+      "tests_integration_test_transient_backend_test_worker_task_handles_transient_backend",
+      "tests_unit_test_encryption",
+      "tests_unit_test_encryption_test_ciphertext_differs_from_plaintext",
+      "tests_unit_test_encryption_test_roundtrip"
+    ],
+    "9": [
+      "frontend_package",
+      "frontend_package_name",
+      "frontend_package_private",
+      "frontend_package_type",
+      "frontend_package_version",
+      "frontend_vite_config",
+      "ref_react_dom",
+      "ref_tailwindcss",
+      "ref_tailwindcss_vite",
+      "ref_types_react",
+      "ref_types_react_dom",
+      "ref_typescript",
+      "ref_vite",
+      "ref_vitejs_plugin_react"
+    ],
+    "10": [
+      "frontend_tsconfig_node",
+      "frontend_tsconfig_node_compileroptions",
+      "frontend_tsconfig_node_compileroptions_allowimportingtsextensions",
+      "frontend_tsconfig_node_compileroptions_isolatedmodules",
+      "frontend_tsconfig_node_compileroptions_lib",
+      "frontend_tsconfig_node_compileroptions_module",
+      "frontend_tsconfig_node_compileroptions_moduledetection",
+      "frontend_tsconfig_node_compileroptions_moduleresolution",
+      "frontend_tsconfig_node_compileroptions_noemit",
+      "frontend_tsconfig_node_compileroptions_skiplibcheck",
+      "frontend_tsconfig_node_compileroptions_strict",
+      "frontend_tsconfig_node_compileroptions_target",
+      "frontend_tsconfig_node_compileroptions_tsbuildinfofile",
+      "frontend_tsconfig_node_include"
+    ],
+    "11": [
+      "any",
+      "core_research_agents_tools",
+      "core_research_agents_tools_rationale_15",
+      "core_research_agents_tools_tool",
+      "core_research_agents_tools_tool_execute",
+      "core_research_agents_tools_tool_init",
+      "core_research_agents_tools_tool_to_dict",
+      "core_research_agents_tools_toolregistry",
+      "core_research_agents_tools_toolregistry_get_all_tools_dict",
+      "core_research_agents_tools_toolregistry_get_tool",
+      "core_research_agents_tools_toolregistry_init",
+      "core_research_agents_tools_toolregistry_register"
+    ],
+    "12": [
+      "frontend_package_dependencies",
+      "frontend_package_dependencies_class_variance_authority",
+      "frontend_package_dependencies_clsx",
+      "frontend_package_dependencies_lucide_react",
+      "frontend_package_dependencies_react",
+      "frontend_package_dependencies_react_dom",
+      "frontend_package_dependencies_tailwind_merge",
+      "frontend_package_dependencies_tailwindcss",
+      "frontend_package_dependencies_tailwindcss_vite",
+      "frontend_package_dependencies_typescript",
+      "frontend_package_dependencies_vite",
+      "frontend_package_dependencies_vitejs_plugin_react"
+    ],
+    "13": [
+      "frontend_src_app",
+      "frontend_src_app_app",
+      "frontend_src_app_codeblock",
+      "frontend_src_app_codeblock_copycode",
+      "frontend_src_app_features",
+      "frontend_src_app_navlinks",
+      "frontend_src_main",
+      "ref_lucide_react",
+      "ref_react"
+    ],
+    "14": [
+      "frontend_src_components_ui_button",
+      "frontend_src_components_ui_button_button",
+      "frontend_src_components_ui_button_buttonprops",
+      "frontend_src_components_ui_button_buttonvariants",
+      "frontend_src_lib_utils",
+      "frontend_src_lib_utils_cn",
+      "ref_class_variance_authority",
+      "ref_clsx",
+      "ref_tailwind_merge"
+    ],
+    "15": [
+      "tests_integration_test_research_submit",
+      "tests_integration_test_research_submit_ctx",
+      "tests_integration_test_research_submit_make_api_key",
+      "tests_integration_test_research_submit_make_auth_session",
+      "tests_integration_test_research_submit_make_org",
+      "tests_integration_test_research_submit_py_asyncio",
+      "tests_integration_test_research_submit_rationale_25",
+      "tests_integration_test_research_submit_test_submit_research_returns_202"
+    ],
+    "16": [
+      "e2e",
+      "tests_e2e_test_smoke",
+      "tests_e2e_test_smoke_py_asyncio",
+      "tests_e2e_test_smoke_rationale_1",
+      "tests_e2e_test_smoke_test_health_ready",
+      "tests_e2e_test_smoke_test_submit_and_poll_job"
+    ],
+    "17": [
+      "cli",
+      "cli_main",
+      "cli_poll_job",
+      "cli_request_api",
+      "cli_submit_job"
+    ],
+    "18": [
+      "frontend_package_scripts",
+      "frontend_package_scripts_build",
+      "frontend_package_scripts_dev",
+      "frontend_package_scripts_preview"
+    ],
+    "19": [
+      "basesettings",
+      "core_config_config",
+      "core_config_settings"
+    ],
+    "20": [
+      "db_migrations_versions_017079e9858d_add_progress_pct",
+      "db_migrations_versions_017079e9858d_add_progress_pct_downgrade",
+      "db_migrations_versions_017079e9858d_add_progress_pct_upgrade"
+    ],
+    "21": [
+      "db_migrations_versions_8725af5114d5_add_contradicts_claim_id",
+      "db_migrations_versions_8725af5114d5_add_contradicts_claim_id_downgrade",
+      "db_migrations_versions_8725af5114d5_add_contradicts_claim_id_upgrade"
+    ],
+    "22": [
+      "db_migrations_versions_89d76d7fb51a_add_trust_score",
+      "db_migrations_versions_89d76d7fb51a_add_trust_score_downgrade",
+      "db_migrations_versions_89d76d7fb51a_add_trust_score_upgrade"
+    ],
+    "23": [
+      "db_migrations_versions_b8876d12289f_add_indexes_and_encrypt_webhook",
+      "db_migrations_versions_b8876d12289f_add_indexes_and_encrypt_webhook_downgrade",
+      "db_migrations_versions_b8876d12289f_add_indexes_and_encrypt_webhook_upgrade"
+    ],
+    "24": [
+      "db_migrations_versions_e4f447f5c3cf_claim",
+      "db_migrations_versions_e4f447f5c3cf_claim_downgrade",
+      "db_migrations_versions_e4f447f5c3cf_claim_upgrade"
+    ],
+    "25": [
+      "db_migrations_versions_fe3f61277437_initial_schema_single_user",
+      "db_migrations_versions_fe3f61277437_initial_schema_single_user_downgrade",
+      "db_migrations_versions_fe3f61277437_initial_schema_single_user_upgrade"
+    ],
+    "26": [
+      "frontend_package_devdependencies",
+      "frontend_package_devdependencies_types_react",
+      "frontend_package_devdependencies_types_react_dom"
+    ],
+    "27": [
+      "frontend_tsconfig",
+      "frontend_tsconfig_files",
+      "frontend_tsconfig_references"
+    ],
+    "28": [
+      "tests_unit_test_all_tables",
+      "tests_unit_test_all_tables_py_asyncio",
+      "tests_unit_test_all_tables_test_all_tables_exist"
+    ],
+    "29": [
+      "tests_unit_test_db_engine",
+      "tests_unit_test_db_engine_py_asyncio",
+      "tests_unit_test_db_engine_test_db_connects"
+    ],
+    "30": [
+      "tests_unit_test_orgs_table",
+      "tests_unit_test_orgs_table_py_asyncio",
+      "tests_unit_test_orgs_table_test_orgs_table_exists"
+    ],
+    "31": [
+      "scripts_migrate",
+      "scripts_migrate_rationale_1"
+    ],
+    "32": [
+      "tests_unit_test_audit_log_middleware",
+      "tests_unit_test_audit_log_middleware_test_module_importable"
+    ],
+    "33": [
+      "api_init"
+    ],
+    "34": [
+      "api_middleware_init"
+    ],
+    "35": [
+      "api_routes_init"
+    ],
+    "36": [
+      "core_init"
+    ],
+    "37": [
+      "core_llm_init"
+    ],
+    "38": [
+      "core_llm_providers_init"
+    ],
+    "39": [
+      "core_queue_init"
+    ],
+    "40": [
+      "core_research_init"
+    ],
+    "41": [
+      "core_security_init"
+    ],
+    "42": [
+      "db_init"
+    ],
+    "43": [
+      "db_models_init"
+    ],
+    "44": [
+      "frontend_src_vite_env_d"
+    ],
+    "45": [
+      "integrations_init"
+    ],
+    "46": [
+      "pkg_deep_research_api"
+    ],
+    "47": [
+      "tests_init"
+    ],
+    "48": [
+      "tests_integration_init"
+    ],
+    "49": [
+      "tests_unit_init"
+    ]
+  },
+  "cohesion": {
+    "0": 0.08364389233954451,
+    "1": 0.09394205443371378,
+    "2": 0.08912655971479501,
+    "3": 0.21428571428571427,
+    "4": 0.18947368421052632,
+    "5": 0.2982456140350877,
+    "6": 0.10526315789473684,
+    "7": 0.16176470588235295,
+    "8": 0.27205882352941174,
+    "9": 0.16483516483516483,
+    "10": 0.14285714285714285,
+    "11": 0.22727272727272727,
+    "12": 0.16666666666666666,
+    "13": 0.2777777777777778,
+    "14": 0.3055555555555556,
+    "15": 0.39285714285714285,
+    "16": 0.5333333333333333,
+    "17": 0.8,
+    "18": 0.5,
+    "19": 0.6666666666666666,
+    "20": 0.6666666666666666,
+    "21": 0.6666666666666666,
+    "22": 0.6666666666666666,
+    "23": 0.6666666666666666,
+    "24": 0.6666666666666666,
+    "25": 0.6666666666666666,
+    "26": 0.6666666666666666,
+    "27": 0.6666666666666666,
+    "28": 0.6666666666666666,
+    "29": 0.6666666666666666,
+    "30": 0.6666666666666666,
+    "31": 1.0,
+    "32": 1.0,
+    "33": 1.0,
+    "34": 1.0,
+    "35": 1.0,
+    "36": 1.0,
+    "37": 1.0,
+    "38": 1.0,
+    "39": 1.0,
+    "40": 1.0,
+    "41": 1.0,
+    "42": 1.0,
+    "43": 1.0,
+    "44": 1.0,
+    "45": 1.0,
+    "46": 1.0,
+    "47": 1.0,
+    "48": 1.0,
+    "49": 1.0
+  },
+  "gods": [
+    {
+      "id": "core_llm_client_llmclient",
+      "label": "LLMClient",
+      "degree": 53
+    },
+    {
+      "id": "core_llm_types_message",
+      "label": "Message",
+      "degree": 35
+    },
+    {
+      "id": "core_llm_types_llmconfig",
+      "label": "LLMConfig",
+      "degree": 25
+    },
+    {
+      "id": "core_research_agents_base_baseagent",
+      "label": "BaseAgent",
+      "degree": 24
+    },
+    {
+      "id": "db_session_get_db_session",
+      "label": "get_db_session()",
+      "degree": 24
+    },
+    {
+      "id": "core_research_state_researchstate",
+      "label": "ResearchState",
+      "degree": 23
+    },
+    {
+      "id": "core_research_engine_run_research",
+      "label": "run_research()",
+      "degree": 22
+    },
+    {
+      "id": "db_models_research_job_researchjob",
+      "label": "ResearchJob",
+      "degree": 22
+    },
+    {
+      "id": "core_queue_tasks_run_research_job",
+      "label": "run_research_job()",
+      "degree": 18
+    },
+    {
+      "id": "db_engine_base",
+      "label": "Base",
+      "degree": 17
+    }
+  ],
+  "surprises": [
+    {
+      "source": "chat_with_report()",
+      "target": "LLMClient",
+      "source_files": [
+        "api/routes/research.py",
+        "core/llm/client.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "chat_with_report()",
+      "target": "LLMConfig",
+      "source_files": [
+        "api/routes/research.py",
+        "core/llm/types.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "chat_with_report()",
+      "target": "Message",
+      "source_files": [
+        "api/routes/research.py",
+        "core/llm/types.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "search_knowledge_graph()",
+      "target": "LLMClient",
+      "source_files": [
+        "api/routes/research.py",
+        "core/llm/client.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "search_knowledge_graph()",
+      "target": "LLMConfig",
+      "source_files": [
+        "api/routes/research.py",
+        "core/llm/types.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}

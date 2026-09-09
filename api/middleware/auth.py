@@ -2,7 +2,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 # Paths that skip BYOK detection (public endpoints)
-_PUBLIC_PATHS = {"/", "/health", "/health/ready", "/health/live", "/docs", "/openapi.json"}
+_PUBLIC_PATHS = {"/", "/health", "/health/ready", "/health/live", "/docs", "/openapi.json", "/v1/modes"}
 
 
 async def auth_middleware(request: Request, call_next):

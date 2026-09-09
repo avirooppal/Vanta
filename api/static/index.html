@@ -3,23 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanta Console</title>
-    <!-- Outfit Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Marked.js for Markdown Rendering -->
+    <title>Vanta — Autonomous Deep Research</title>
+    <!-- Google Fonts: Instrument Serif & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Marked.js for Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --panel-bg: rgba(30, 41, 59, 0.45);
-            --panel-border: rgba(255, 255, 255, 0.08);
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --text-main: #f8fafc;
+            --font-display: 'Instrument Serif', Georgia, serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --bg-dark: #04101d;
+            --text-main: #ffffff;
             --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.025);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-hover: rgba(255, 255, 255, 0.05);
+            --accent-glow: rgba(255, 255, 255, 0.15);
+            --primary: #ffffff;
+            --primary-bg: #090d16;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
         }
 
         * {
@@ -29,639 +36,1047 @@
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-gradient);
+            font-family: var(--font-body);
+            background-color: var(--bg-dark);
             color: var(--text-main);
-            min-height: 100/vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 2rem 1rem;
-            overflow-y: auto;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
+        /* Ambient Video Background */
+        .video-backdrop {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.65;
+            pointer-events: none;
+        }
+
+        .video-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 20%, rgba(4, 18, 30, 0.5) 0%, rgba(2, 6, 12, 0.88) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .layout {
+            position: relative;
+            z-index: 2;
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 5rem 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
-        header {
+        /* Header Navigation */
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--panel-border);
-            padding-bottom: 1rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 0.75rem;
+            text-decoration: none;
         }
 
-        .version {
-            font-size: 0.85rem;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
+        .brand-name {
+            font-family: var(--font-display);
+            font-size: 2.25rem;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .brand-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
             color: var(--text-muted);
-            border: 1px solid var(--panel-border);
+            border: 1px solid var(--glass-border);
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.03);
         }
 
-        /* Glassmorphism Panel */
-        .card {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 1.5rem;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-
-        h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
+        .nav-links {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 1.25rem;
         }
 
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            display: inline-block;
+            margin-right: 0.4rem;
+        }
+
+        /* Hero Pitch */
+        .hero {
+            text-align: center;
+            padding: 1.5rem 0 1rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .hero-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--text-muted);
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 400;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            max-width: 850px;
+        }
+
+        .hero h1 em {
+            font-family: var(--font-display);
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        .hero-desc {
+            max-width: 600px;
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Liquid Glass Cards */
+        .liquid-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12), 0 20px 50px rgba(0, 0, 0, 0.5);
+            transition: all 0.25s ease;
+        }
+
+        .liquid-glass:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        /* Settings Bar */
+        .settings-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .settings-bar:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .settings-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .settings-content {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Form Controls */
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .form-group:last-child {
-            margin-bottom: 0;
         }
 
         label {
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 500;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.02em;
         }
 
-        input, textarea, select {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--panel-border);
-            border-radius: 8px;
+        input[type="text"],
+        input[type="password"],
+        select,
+        textarea {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
             color: var(--text-main);
-            padding: 0.75rem;
-            font-family: inherit;
+            font-family: var(--font-body);
             font-size: 0.95rem;
+            padding: 0.85rem 1rem;
             outline: none;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             width: 100%;
         }
 
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.65);
         }
 
-        .row {
+        /* Mode Selector Grid */
+        .modes-section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .mode-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mode-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem 1rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: left;
+        }
+
+        .mode-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .mode-card.active {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.06), 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .mode-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mode-icon-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .mode-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            padding: 0.2rem 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .mode-card.active .mode-badge {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .mode-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* Query Input and Suggestions */
+        .query-area textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .suggestion-pill {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            padding: 0.35rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .suggestion-pill:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Action Row */
+        .action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.5rem;
             gap: 1rem;
         }
 
-        @media (max-width: 600px) {
-            .row {
-                grid-template-columns: 1fr;
-            }
+        .rounds-picker {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
-        button {
-            background: var(--primary);
-            color: var(--text-main);
+        .btn-primary {
+            background: #ffffff;
+            color: #050b14;
             border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            padding: 0.85rem 2rem;
+            font-family: var(--font-body);
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 0.5rem;
         }
 
-        button:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
+        .btn-primary:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.35);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        button:disabled {
-            background: var(--text-muted);
-            opacity: 0.5;
+        .btn-primary:disabled {
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
-        /* Collapsible settings toggle */
-        .settings-toggle {
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            border-radius: 9999px;
+            padding: 0.65rem 1.25rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            text-decoration: underline;
-            text-align: right;
-            user-select: none;
+            transition: all 0.2s;
         }
 
-        /* Loading Spinner */
-        .spinner-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            padding: 2rem 0;
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        /* Live Progress Card */
+        #progressCard {
+            display: none;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .pipeline-tracker {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+            margin: 1.5rem 0;
         }
 
-        /* Status Badge */
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
+        .pipeline-stage {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 0.85rem 0.75rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .pipeline-stage.pending {
+            color: var(--text-dim);
+            opacity: 0.6;
+        }
+
+        .pipeline-stage.active {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+
+        .pipeline-stage.done {
+            border-color: rgba(52, 211, 153, 0.4);
+            color: var(--success);
+            background: rgba(52, 211, 153, 0.05);
+        }
+
+        .stage-num {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+        }
+
+        .stage-name {
             font-size: 0.85rem;
             font-weight: 600;
-            text-transform: uppercase;
         }
 
-        .badge-queued { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
-        .badge-running { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
-        .badge-completed { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .badge-failed { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        /* Progress Bar */
+        .progress-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+            margin: 1.25rem 0;
+        }
 
-        /* Report Markdown Styling */
-        .report-content {
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #818cf8 0%, #c084fc 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 12px rgba(192, 132, 252, 0.6);
+        }
+
+        /* Terminal Logs */
+        .log-terminal {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'SFMono-Regular', Consolas, 'Courier New', monospace;
+            font-size: 0.825rem;
+            max-height: 200px;
+            overflow-y: auto;
+            color: #cbd5e1;
             line-height: 1.7;
-            font-size: 1.05rem;
+        }
+
+        /* Report Result Section */
+        #reportCard {
+            display: none;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .report-title-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .report-mode-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+        }
+
+        .report-body {
+            font-size: 1rem;
+            line-height: 1.75;
             color: #e2e8f0;
         }
 
-        .report-content h1, .report-content h2, .report-content h3 {
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
+        .report-body h1,
+        .report-body h2,
+        .report-body h3 {
+            font-family: var(--font-display);
+            font-weight: 400;
             color: var(--text-main);
-            font-weight: 600;
+            margin: 1.75rem 0 0.85rem 0;
+            letter-spacing: -0.01em;
         }
 
-        .report-content h1 { font-size: 1.6rem; border-bottom: 1px solid var(--panel-border); padding-bottom: 0.4rem; }
-        .report-content h2 { font-size: 1.35rem; }
-        .report-content h3 { font-size: 1.15rem; }
-        .report-content p { margin-bottom: 1rem; }
-        .report-content ul, .report-content ol { margin-bottom: 1rem; padding-left: 1.5rem; }
-        .report-content li { margin-bottom: 0.4rem; }
-        .report-content blockquote {
-            border-left: 4px solid var(--primary);
-            background: rgba(255, 255, 255, 0.03);
+        .report-body h1 { font-size: 2.2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.5rem; }
+        .report-body h2 { font-size: 1.75rem; }
+        .report-body h3 { font-size: 1.35rem; }
+        .report-body p { margin-bottom: 1.15rem; }
+        .report-body ul, .report-body ol { margin-bottom: 1.15rem; padding-left: 1.75rem; }
+        .report-body li { margin-bottom: 0.4rem; }
+        .report-body blockquote {
+            border-left: 3px solid rgba(255, 255, 255, 0.4);
             padding: 0.5rem 1rem;
-            margin: 1rem 0;
-            border-radius: 0 4px 4px 0;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
         }
 
-        .sources-list {
-            margin-top: 1.5rem;
-            border-top: 1px solid var(--panel-border);
-            padding-top: 1rem;
+        .citations-section {
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
         }
 
-        .source-item {
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-        }
-
-        .source-item a {
-            color: #818cf8;
+        .citation-chip {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 0.4rem 0.75rem;
+            margin: 0.3rem 0.3rem 0.3rem 0;
+            font-size: 0.825rem;
+            color: #93c5fd;
             text-decoration: none;
-            word-break: break-all;
+            transition: all 0.2s;
         }
 
-        .source-item a:hover {
-            text-decoration: underline;
+        .citation-chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
         }
 
-        .source-index {
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-right: 0.5rem;
-        }
-
-        .source-title {
-            color: var(--text-main);
-            font-weight: 500;
-        }
-
-        .export-actions {
-            margin-top: 1.5rem;
-            display: flex;
-            gap: 1rem;
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .action-row { flex-direction: column; align-items: stretch; }
+            .btn-primary { justify-content: center; width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Vanta Console</h1>
-            <div class="version">v0.1.0</div>
+
+    <!-- Ambient Video Background -->
+    <video class="video-backdrop" autoplay loop muted playsinline aria-hidden="true" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4"></video>
+    <div class="video-overlay"></div>
+
+    <div class="layout">
+        <!-- Navigation -->
+        <nav>
+            <a href="/" class="brand">
+                <span class="brand-name">Vanta</span>
+                <span class="brand-tag">Console</span>
+            </a>
+            <div class="nav-links">
+                <span style="font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center;">
+                    <span class="live-dot"></span>Fleet Active
+                </span>
+                <a href="/docs" target="_blank" class="nav-link">API Docs</a>
+                <a href="https://github.com/avirooppal/Vanta-Deep-Research-API" target="_blank" class="nav-link">GitHub</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="hero">
+            <span class="hero-badge">Multi-Agent Autonomous Intelligence</span>
+            <h1>Autonomous research <em>without</em> hallucinated shortcuts.</h1>
+            <p class="hero-desc">Launch targeted multi-round research fleets. Select your mode, enter your query, and let the agents search, validate, extract, and synthesize verified evidence.</p>
         </header>
 
-        <!-- API Configuration Settings -->
-        <div class="card" id="settingsCard">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <h2>⚙ Connection Settings</h2>
-                <div class="settings-toggle" onclick="toggleSettings()" id="settingsToggle">Hide</div>
+        <!-- Settings Bar -->
+        <div class="liquid-glass" style="padding: 1.25rem;">
+            <div class="settings-bar" onclick="toggleSettings()">
+                <div class="settings-label">
+                    <span>⚙️</span>
+                    <span>LLM Provider &amp; API Key Configuration</span>
+                </div>
+                <span id="settingsToggleText" style="font-size: 0.8rem; color: var(--text-muted);">[+] Configure Keys</span>
             </div>
-            <div id="settingsFields" class="row">
+            <div id="settingsContent" class="settings-content">
                 <div class="form-group">
                     <label for="advProvider">Provider</label>
-                    <select id="advProvider">
+                    <select id="advProvider" onchange="onProviderChange()">
                         <option value="">Auto-detect from key</option>
-                        <option value="openai">OpenAI</option>
-                        <option value="anthropic">Anthropic</option>
-                        <option value="openai_compatible">Gemini (Google)</option>
+                        <option value="openai">OpenAI (GPT-4o, o3-mini)</option>
+                        <option value="anthropic">Anthropic (Claude 3.5 Sonnet)</option>
+                        <option value="openai_compatible">Gemini / Custom OpenAI Base</option>
                         <option value="openrouter">OpenRouter</option>
+                        <option value="ollama">Ollama / Local vLLM</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="apiKey">LLM API Key</label>
-                    <input type="password" id="apiKey" placeholder="sk-... or AIza...">
+                    <label for="apiKey">API Key (Stored locally in browser)</label>
+                    <input type="password" id="apiKey" placeholder="sk-ant-... or sk-... or AIza...">
                 </div>
-                <div class="form-group" style="grid-column: span 2; display: none;">
-                    <input type="hidden" id="apiUrl" value="http://localhost:8000">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="advBaseUrl">Optional Base URL Override</label>
+                    <input type="text" id="advBaseUrl" placeholder="https://api.openai.com/v1 or http://localhost:11434/v1">
                 </div>
             </div>
         </div>
 
-        <!-- Submit Query Card -->
-        <div class="card" id="queryCard">
-            <h2>🔍 Launch New Research</h2>
-            <div class="form-group">
-                <label for="queryText">Research Question</label>
-                <textarea id="queryText" rows="4" placeholder="What are the key competitor dynamics in the solid-state battery space as of 2026?"></textarea>
+        <!-- Main Query Launchpad -->
+        <div class="liquid-glass" id="queryCard">
+            <div class="modes-section-title">Select Research Mode</div>
+            <div class="mode-grid">
+                <div class="mode-card active" data-mode="research" onclick="selectMode('research', 3)">
+                    <div class="mode-card-header">
+                        <span class="mode-icon-title">🔬 Research</span>
+                        <span class="mode-badge">3 Rounds</span>
+                    </div>
+                    <p class="mode-desc">Balanced analytical research. Evidence gathering, contradiction check, and structured citations.</p>
+                </div>
+
+                <div class="mode-card" data-mode="study" onclick="selectMode('study', 2)">
+                    <div class="mode-card-header">
+                        <span class="mode-icon-title">🎓 Study</span>
+                        <span class="mode-badge">2 Rounds</span>
+                    </div>
+                    <p class="mode-desc">Educational mastery. First-principles Feynman explanations, practice quiz, and glossary.</p>
+                </div>
+
+                <div class="mode-card" data-mode="brief" onclick="selectMode('brief', 1)">
+                    <div class="mode-card-header">
+                        <span class="mode-icon-title">⚡ Brief</span>
+                        <span class="mode-badge">1 Round</span>
+                    </div>
+                    <p class="mode-desc">Rapid executive briefing. Bottom Line Up Front (BLUF), top takeaways, and action items.</p>
+                </div>
+
+                <div class="mode-card" data-mode="deep" onclick="selectMode('deep', 4)">
+                    <div class="mode-card-header">
+                        <span class="mode-icon-title">🏛️ Deep</span>
+                        <span class="mode-badge">4 Rounds</span>
+                    </div>
+                    <p class="mode-desc">Exhaustive academic dive. Rigorous literature review, arXiv whitepapers, and contradiction matrix.</p>
+                </div>
             </div>
-            <div class="row" style="align-items: end; margin-top: 1rem;">
-                <div class="form-group">
-                    <label for="maxRounds">Max Rounds (1 - 5)</label>
-                    <select id="maxRounds">
+
+            <div class="form-group query-area">
+                <label for="queryText">Research Question or Topic</label>
+                <textarea id="queryText" placeholder="What are the key technical barriers in commercial solid-state lithium-metal batteries as of 2026?"></textarea>
+                <div class="suggestions">
+                    <span style="font-size: 0.75rem; color: var(--text-dim); margin-right: 0.25rem;">Try:</span>
+                    <span class="suggestion-pill" onclick="setQuery('What are the latest breakthroughs in room-temperature solid-state batteries?')">Solid-state batteries</span>
+                    <span class="suggestion-pill" onclick="setQuery('Explain quantum computing and qubit superposition from first principles')">Quantum computing</span>
+                    <span class="suggestion-pill" onclick="setQuery('State space models (Mamba) vs Transformers: architectural trade-offs')">Mamba vs Transformers</span>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <div class="rounds-picker">
+                    <label for="maxRounds" style="white-space: nowrap;">Rounds:</label>
+                    <select id="maxRounds" style="width: auto; padding: 0.5rem 1rem;">
                         <option value="1">1 Round (Fast)</option>
                         <option value="2">2 Rounds</option>
                         <option value="3" selected>3 Rounds (Balanced)</option>
                         <option value="4">4 Rounds</option>
-                        <option value="5">5 Rounds (Comprehensive)</option>
+                        <option value="5">5 Rounds (Max)</option>
                     </select>
                 </div>
-                <button onclick="submitResearch()" id="submitBtn">Start Research Pipeline</button>
-            </div>
-
-            <!-- Advanced LLM Configuration (Collapsible) -->
-            <div style="margin-top: 1.5rem; border-top: 1px solid var(--panel-border); padding-top: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleAdvancedLlm()">
-                    <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">🛠 Advanced LLM Override (Optional)</span>
-                    <span id="advToggleArrow" style="color: var(--text-muted); font-size: 0.8rem;">[+] Expand</span>
-                </div>
-                <div id="advancedLlmFields" style="display: none; margin-top: 1rem; gap: 1rem; grid-template-columns: 1fr 1fr;">
-                    <!-- Provider moved to main settings -->
-                    <div class="form-group">
-                        <label for="advModel">Model Name</label>
-                        <input type="text" id="advModel" placeholder="e.g. gpt-4o, claude-3-5-sonnet-latest">
-                    </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label for="advBaseUrl">Base URL Override</label>
-                        <input type="text" id="advBaseUrl" placeholder="e.g. https://api.openai.com/v1">
-                    </div>
-                </div>
+                <button class="btn-primary" id="submitBtn" onclick="launchPipeline()">
+                    <span>Launch Research Fleet</span>
+                    <span>→</span>
+                </button>
             </div>
         </div>
 
-
-        <!-- Progress Tracker Card -->
-        <div class="card" id="progressCard" style="display: none;">
-            <h2>⏳ Execution Pipeline</h2>
-            <div class="spinner-container">
-                <div class="spinner"></div>
-                <div style="text-align: center;">
-                    <p style="font-size: 1.1rem; font-weight: 600;">Status: <span id="statusBadge" class="badge">QUEUED</span></p>
-                    <p id="statusMsg" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Initializing research loops...</p>
+        <!-- Live Pipeline Execution Tracker -->
+        <div class="liquid-glass" id="progressCard">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span class="report-mode-tag" id="activeModeLabel">RESEARCH MODE</span>
+                    <h2 style="font-family: var(--font-display); font-size: 1.85rem; margin-top: 0.25rem;" id="activeQueryTitle">Research in Progress</h2>
                 </div>
-                
-                <div id="liveProgressLog" style="width: 100%; margin-top: 1.5rem; height: 200px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; border: 1px solid var(--panel-border); text-align: left; font-size: 0.9rem; color: var(--text-muted); font-family: monospace; display: flex; flex-direction: column; gap: 0.5rem;">
-                </div>
+                <button class="btn-secondary" id="cancelBtn" onclick="cancelJob()">Cancel Job</button>
+            </div>
 
-                <button onclick="cancelResearch()" class="danger-btn" style="background: var(--danger); margin-top: 1rem;" id="cancelBtn">Cancel Execution</button>
+            <!-- Pipeline Visualizer -->
+            <div class="pipeline-tracker">
+                <div class="pipeline-stage active" id="stage-coord">
+                    <div class="stage-num">Stage 1</div>
+                    <div class="stage-name">Coordinator</div>
+                </div>
+                <div class="pipeline-stage pending" id="stage-search">
+                    <div class="stage-num">Stage 2</div>
+                    <div class="stage-name">Search Fleet</div>
+                </div>
+                <div class="pipeline-stage pending" id="stage-valid">
+                    <div class="stage-num">Stage 3</div>
+                    <div class="stage-name">Validator</div>
+                </div>
+                <div class="pipeline-stage pending" id="stage-extract">
+                    <div class="stage-num">Stage 4</div>
+                    <div class="stage-name">Extractor</div>
+                </div>
+                <div class="pipeline-stage pending" id="stage-conflict">
+                    <div class="stage-num">Stage 5</div>
+                    <div class="stage-name">Contradictions</div>
+                </div>
+                <div class="pipeline-stage pending" id="stage-synth">
+                    <div class="stage-num">Stage 6</div>
+                    <div class="stage-name">Synthesizer</div>
+                </div>
+                <div class="pipeline-stage pending" id="stage-verify">
+                    <div class="stage-num">Stage 7</div>
+                    <div class="stage-name">Verifier</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-track">
+                <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+
+            <!-- Terminal Live Logs -->
+            <div class="log-terminal" id="terminalLog">
+                <div>[00:00:00] Initializing multi-agent dispatch...</div>
             </div>
         </div>
 
-        <!-- Final Report Card -->
-        <div class="card" id="reportCard" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
-                <h2>📄 Synthesized Report</h2>
-                <button onclick="resetConsole()" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--panel-border);">New Research</button>
-            </div>
-            <div id="reportSummary" style="background: rgba(99, 102, 241, 0.08); border-left: 4px solid var(--primary); padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1.5rem;">
-                <h3 style="font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--primary);">Executive Summary</h3>
-                <p id="summaryText" style="line-height: 1.6;"></p>
-            </div>
-            <div id="reportHTML" class="report-content"></div>
-            
-            <div class="sources-list">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Cited Sources</h3>
-                <div id="sourcesContainer"></div>
+        <!-- Final Report Viewer -->
+        <div class="liquid-glass" id="reportCard">
+            <div class="report-header">
+                <div class="report-title-meta">
+                    <span class="report-mode-tag" id="reportModeTag">SYNTHESIZED REPORT</span>
+                    <h2 style="font-family: var(--font-display); font-size: 2.25rem;" id="reportHeading">Research Findings</h2>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="btn-secondary" onclick="copyReportMarkdown()">Copy Markdown</button>
+                    <button class="btn-secondary" onclick="downloadReport()">Download .md</button>
+                    <button class="btn-primary" style="padding: 0.65rem 1.25rem; font-size: 0.85rem;" onclick="resetConsole()">New Inquiry</button>
+                </div>
             </div>
 
-            <div class="export-actions">
-                <button onclick="downloadReport()" id="downloadBtn">📥 Download Markdown</button>
+            <div class="report-body" id="reportContent"></div>
+
+            <div class="citations-section" id="citationsSection">
+                <h3 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.75rem;">Verified Sources</h3>
+                <div id="citationsList"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Load settings from localStorage if present
-        document.addEventListener("DOMContentLoaded", () => {
-            const savedUrl = localStorage.getItem("drapi_url");
-            const savedKey = localStorage.getItem("drapi_key");
-            if (savedUrl) document.getElementById("apiUrl").value = savedUrl;
+        let selectedMode = "research";
+        let currentJobId = null;
+        let pollInterval = null;
+        let lastReportMarkdown = "";
+
+        // Initialize from localStorage
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedKey = localStorage.getItem("vanta_api_key");
+            const savedProvider = localStorage.getItem("vanta_provider");
+            const savedBaseUrl = localStorage.getItem("vanta_base_url");
             if (savedKey) document.getElementById("apiKey").value = savedKey;
+            if (savedProvider) document.getElementById("advProvider").value = savedProvider;
+            if (savedBaseUrl) document.getElementById("advBaseUrl").value = savedBaseUrl;
         });
 
-        let pollInterval = null;
-        let currentJobId = null;
-
         function toggleSettings() {
-            const fields = document.getElementById("settingsFields");
-            const toggle = document.getElementById("settingsToggle");
-            if (fields.style.display === "none") {
-                fields.style.display = "grid";
-                toggle.textContent = "Hide";
+            const content = document.getElementById("settingsContent");
+            const text = document.getElementById("settingsToggleText");
+            if (content.style.display === "grid") {
+                content.style.display = "none";
+                text.textContent = "[+] Configure Keys";
             } else {
-                fields.style.display = "none";
-                toggle.textContent = "Show Settings";
+                content.style.display = "grid";
+                text.textContent = "[-] Collapse";
             }
         }
 
-        function toggleAdvancedLlm() {
-            const fields = document.getElementById("advancedLlmFields");
-            const arrow = document.getElementById("advToggleArrow");
-            if (fields.style.display === "none") {
-                fields.style.display = "grid";
-                arrow.textContent = "[-] Collapse";
-            } else {
-                fields.style.display = "none";
-                arrow.textContent = "[+] Expand";
+        function onProviderChange() {
+            saveSettings();
+        }
+
+        function saveSettings() {
+            localStorage.setItem("vanta_api_key", document.getElementById("apiKey").value.trim());
+            localStorage.setItem("vanta_provider", document.getElementById("advProvider").value);
+            localStorage.setItem("vanta_base_url", document.getElementById("advBaseUrl").value.trim());
+        }
+
+        function selectMode(mode, defaultRounds) {
+            selectedMode = mode;
+            document.querySelectorAll(".mode-card").forEach(c => {
+                c.classList.toggle("active", c.getAttribute("data-mode") === mode);
+            });
+            document.getElementById("maxRounds").value = String(defaultRounds);
+        }
+
+        function setQuery(text) {
+            document.getElementById("queryText").value = text;
+        }
+
+        function addLog(msg, color = "#cbd5e1") {
+            const term = document.getElementById("terminalLog");
+            const time = new Date().toTimeString().split(" ")[0];
+            const el = document.createElement("div");
+            el.style.color = color;
+            el.textContent = `[${time}] ${msg}`;
+            term.appendChild(el);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        function setStage(stageId) {
+            const stages = ["stage-coord", "stage-search", "stage-valid", "stage-extract", "stage-conflict", "stage-synth", "stage-verify"];
+            let found = false;
+            for (const s of stages) {
+                const el = document.getElementById(s);
+                if (s === stageId) {
+                    el.className = "pipeline-stage active";
+                    found = true;
+                } else if (!found) {
+                    el.className = "pipeline-stage done";
+                } else {
+                    el.className = "pipeline-stage pending";
+                }
             }
         }
 
-        function getAuthHeaders(provider, model, baseUrl) {
-            const key = document.getElementById("apiKey").value.trim();
-            const headers = {
-                "Authorization": `Bearer ${key}`,
-                "Content-Type": "application/json"
-            };
-            if (provider) headers["X-Provider"] = provider;
-            if (model) headers["X-Model"] = model;
-            if (baseUrl) headers["X-Base-Url"] = baseUrl;
-            return headers;
-        }
-
-        function getBaseUrl() {
-            return document.getElementById("apiUrl").value.trim().replace(/\/$/, "");
-        }
-
-        function saveConfig() {
-            localStorage.setItem("drapi_url", getBaseUrl());
-            localStorage.setItem("drapi_key", document.getElementById("apiKey").value.trim());
-        }
-
-        async function submitResearch() {
+        async function launchPipeline() {
             const query = document.getElementById("queryText").value.trim();
+            const apiKey = document.getElementById("apiKey").value.trim();
             const maxRounds = parseInt(document.getElementById("maxRounds").value);
             const provider = document.getElementById("advProvider").value;
-            const model = document.getElementById("advModel").value.trim();
             const baseUrl = document.getElementById("advBaseUrl").value.trim();
 
             if (!query) {
-                alert("Please enter a research question.");
+                alert("Please enter a research inquiry.");
                 return;
             }
 
-            saveConfig();
-            document.getElementById("submitBtn").disabled = true;
+            if (!apiKey) {
+                toggleSettings();
+                alert("Please provide an LLM API Key (OpenAI, Anthropic, Gemini, or OpenRouter).");
+                return;
+            }
 
-            const url = `${getBaseUrl()}/v1/research`;
-            const payload = { query, max_rounds: maxRounds };
+            saveSettings();
+
+            // UI Transitions
+            document.getElementById("queryCard").style.display = "none";
+            document.getElementById("progressCard").style.display = "block";
+            document.getElementById("reportCard").style.display = "none";
+            document.getElementById("submitBtn").disabled = true;
+            document.getElementById("activeModeLabel").textContent = `${selectedMode.toUpperCase()} MODE`;
+            document.getElementById("activeQueryTitle").textContent = query;
+            document.getElementById("progressFill").style.width = "5%";
+            document.getElementById("terminalLog").innerHTML = "";
+
+            addLog(`Submitting research inquiry in [${selectedMode.toUpperCase()}] mode...`, "#818cf8");
+
+            const headers = {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            };
+
+            const payload = {
+                query: query,
+                mode: selectedMode,
+                max_rounds: maxRounds
+            };
             if (provider) payload.provider = provider;
-            if (model) payload.model = model;
             if (baseUrl) payload.base_url = baseUrl;
 
             try {
-                const res = await fetch(url, {
+                const res = await fetch("/v1/research", {
                     method: "POST",
-                    headers: getAuthHeaders(provider, model, baseUrl),
+                    headers: headers,
                     body: JSON.stringify(payload)
                 });
 
-
                 if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.error || errorData.detail || `Server returned ${res.status}`);
+                    const err = await res.json();
+                    throw new Error(err.error || err.detail || `Server returned status ${res.status}`);
                 }
 
                 const data = await res.json();
                 currentJobId = data.id;
-
-                // Toggle views
-                document.getElementById("queryCard").style.display = "none";
-                document.getElementById("progressCard").style.display = "block";
-                document.getElementById("cancelBtn").disabled = false;
-
-                document.getElementById("liveProgressLog").innerHTML = '<div style="color: var(--primary);">[System] Dispatched task to worker queue...</div>';
-                updateStatusBadge(data.status);
-                startPolling(currentJobId);
+                addLog(`Job created: ${currentJobId}. Worker fleet starting...`, "#34d399");
+                startPolling(currentJobId, apiKey);
 
             } catch (err) {
-                alert(`Error submitting job: ${err.message}`);
+                addLog(`Error: ${err.message}`, "#f87171");
+                alert(`Submission error: ${err.message}`);
+                document.getElementById("queryCard").style.display = "block";
+                document.getElementById("progressCard").style.display = "none";
                 document.getElementById("submitBtn").disabled = false;
             }
         }
 
-        function updateStatusBadge(status) {
-            const badge = document.getElementById("statusBadge");
-            badge.className = `badge badge-${status}`;
-            badge.textContent = status;
-
-            const msg = document.getElementById("statusMsg");
-            if (status === "queued") {
-                msg.textContent = "Waiting for an available worker slot...";
-            } else if (status === "running") {
-                msg.textContent = "Orchestrating search rounds & extracting findings...";
-            }
-        }
-
-        function startPolling(jobId) {
+        function startPolling(jobId, apiKey) {
             if (pollInterval) clearInterval(pollInterval);
 
+            let elapsed = 0;
             pollInterval = setInterval(async () => {
-                const url = `${getBaseUrl()}/v1/research/${jobId}`;
+                elapsed += 2;
                 try {
-                    const res = await fetch(url, { headers: getAuthHeaders(null, null, null) });
+                    const res = await fetch(`/v1/research/${jobId}`, {
+                        headers: { "Authorization": `Bearer ${apiKey}` }
+                    });
+
                     if (!res.ok) return;
+                    const job = await res.json();
 
-                    const data = await res.json();
-                    updateStatusBadge(data.status);
-                    
-                    if (data.status === "running" && data.partial_sources) {
-                        const logDiv = document.getElementById("liveProgressLog");
-                        let newLogs = false;
-                        
-                        if (!window.seenSources) window.seenSources = new Set();
-                        
-                        data.partial_sources.forEach(src => {
-                            if (!window.seenSources.has(src.url)) {
-                                window.seenSources.add(src.url);
-                                const entry = document.createElement("div");
-                                entry.innerHTML = `<span style="color: #c084fc;">[Round ${src.round_number}]</span> Extracted facts from: <a href="${src.url}" target="_blank" style="color: #94a3b8; text-decoration: none;">${src.title.substring(0, 50)}...</a>`;
-                                logDiv.appendChild(entry);
-                                newLogs = true;
-                            }
-                        });
-                        
-                        if (newLogs) {
-                            logDiv.scrollTop = logDiv.scrollHeight;
+                    // Update UI according to status
+                    if (job.status === "running") {
+                        const pct = Math.max(15, Math.min(85, (elapsed * 5)));
+                        document.getElementById("progressFill").style.width = `${pct}%`;
+
+                        if (pct < 30) {
+                            setStage("stage-search");
+                            addLog(`SearchAgent querying engines for round 1...`);
+                        } else if (pct < 50) {
+                            setStage("stage-valid");
+                            addLog(`ValidatorAgent screening domains & trust scores...`);
+                        } else if (pct < 70) {
+                            setStage("stage-extract");
+                            addLog(`ExtractorAgent distilling facts and claims...`);
+                        } else {
+                            setStage("stage-synth");
+                            addLog(`SynthesizerAgent compiling report in ${selectedMode} format...`);
                         }
+                    } else if (job.status === "completed") {
+                        clearInterval(pollInterval);
+                        document.getElementById("progressFill").style.width = "100%";
+                        setStage("stage-verify");
+                        addLog("Citation verification finished. Final report generated.", "#34d399");
+                        setTimeout(() => showReport(job), 800);
+                    } else if (job.status === "failed") {
+                        clearInterval(pollInterval);
+                        addLog(`Pipeline failed: ${job.error}`, "#f87171");
+                        alert(`Research failed: ${job.error}`);
                     }
-
-                    if (data.status === "completed") {
-                        clearInterval(pollInterval);
-                        showReport(data);
-                    } else if (data.status === "failed") {
-                        clearInterval(pollInterval);
-                        alert(`Research pipeline failed: ${data.error || "Unknown error"}`);
-                        resetConsole();
-                    } else if (data.status === "cancelled") {
-                        clearInterval(pollInterval);
-                        alert("Research job was cancelled.");
-                        resetConsole();
-                    }
-                } catch (err) {
-                    console.error("Error polling job: ", err);
+                } catch (e) {
+                    console.error("Polling error", e);
                 }
-            }, 3000);
+            }, 2000);
         }
 
-        async function cancelResearch() {
-            if (!currentJobId) return;
-            document.getElementById("cancelBtn").disabled = true;
-
-            const url = `${getBaseUrl()}/v1/research/${currentJobId}`;
-            try {
-                const res = await fetch(url, {
-                    method: "DELETE",
-                    headers: getAuthHeaders(null, null, null)
-                });
-                if (res.ok) {
-                    clearInterval(pollInterval);
-                    alert("Job cancellation requested.");
-                    resetConsole();
-                } else {
-                    const err = await res.json();
-                    alert(`Failed to cancel: ${err.detail}`);
-                    document.getElementById("cancelBtn").disabled = false;
-                }
-            } catch (err) {
-                alert(`Error: ${err.message}`);
-                document.getElementById("cancelBtn").disabled = false;
-            }
-        }
-
-        function showReport(jobData) {
+        function showReport(job) {
             document.getElementById("progressCard").style.display = "none";
             document.getElementById("reportCard").style.display = "block";
 
-            const report = jobData.report;
-            document.getElementById("summaryText").textContent = report.summary;
-            document.getElementById("reportHTML").innerHTML = marked.parse(report.body_md);
+            const report = job.report || {};
+            const bodyMd = report.body_md || report.content_md || "No report body returned.";
+            lastReportMarkdown = bodyMd;
 
-            // Populate citations
-            const container = document.getElementById("sourcesContainer");
-            container.innerHTML = "";
-            if (report.citations && report.citations.length > 0) {
-                report.citations.forEach((url, i) => {
-                    const div = document.createElement("div");
-                    div.className = "source-item";
-                    div.innerHTML = `<span class="source-index">[${i + 1}]</span><a href="${url}" target="_blank">${url}</a>`;
-                    container.appendChild(div);
+            document.getElementById("reportHeading").textContent = job.query;
+            document.getElementById("reportModeTag").textContent = `${(job.mode || selectedMode).toUpperCase()} REPORT`;
+
+            // Render Markdown
+            document.getElementById("reportContent").innerHTML = marked.parse(bodyMd);
+
+            // Render Citations
+            const citations = report.citations || [];
+            const citContainer = document.getElementById("citationsList");
+            citContainer.innerHTML = "";
+
+            if (citations.length > 0) {
+                citations.forEach((c, idx) => {
+                    const chip = document.createElement("a");
+                    chip.className = "citation-chip";
+                    chip.href = c.url;
+                    chip.target = "_blank";
+                    chip.textContent = `[${idx + 1}] ${c.title || c.url}`;
+                    citContainer.appendChild(chip);
                 });
             } else {
-                container.innerHTML = "<p style='color: var(--text-muted); font-size: 0.95rem;'>No citations recorded.</p>";
+                citContainer.innerHTML = "<span style='color: var(--text-dim); font-size: 0.85rem;'>No citations gathered.</span>";
             }
-
-            // Bind download button
-            window.currentReportMarkdown = report.body_md;
-            window.currentReportId = report.id;
         }
 
-        function downloadReport() {
-            if (!window.currentReportMarkdown) return;
-            const blob = new Blob([window.currentReportMarkdown], { type: "text/markdown" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `report-${window.currentReportId || "export"}.md`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+        async function cancelJob() {
+            if (!currentJobId) return;
+            const apiKey = document.getElementById("apiKey").value.trim();
+            await fetch(`/v1/research/${currentJobId}/cancel`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${apiKey}` }
+            });
+            if (pollInterval) clearInterval(pollInterval);
+            addLog("Job cancelled by user.", "#fbbf24");
+            resetConsole();
         }
 
         function resetConsole() {
-            if (pollInterval) clearInterval(pollInterval);
-            currentJobId = null;
-            window.currentReportMarkdown = null;
-            window.currentReportId = null;
-            window.seenSources = new Set();
-            document.getElementById("liveProgressLog").innerHTML = '';
-
-            document.getElementById("progressCard").style.display = "none";
             document.getElementById("reportCard").style.display = "none";
+            document.getElementById("progressCard").style.display = "none";
             document.getElementById("queryCard").style.display = "block";
             document.getElementById("submitBtn").disabled = false;
-            document.getElementById("queryText").value = "";
+        }
+
+        function copyReportMarkdown() {
+            if (!lastReportMarkdown) return;
+            navigator.clipboard.writeText(lastReportMarkdown);
+            alert("Report markdown copied to clipboard!");
+        }
+
+        function downloadReport() {
+            if (!lastReportMarkdown) return;
+            const blob = new Blob([lastReportMarkdown], { type: "text/markdown" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `vanta-${selectedMode}-research.md`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
