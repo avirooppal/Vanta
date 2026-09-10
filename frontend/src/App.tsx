@@ -98,14 +98,15 @@ function App() {
             Vanta
           </a>
           {isConsolePage && (
-            <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-xs font-medium tracking-wide text-white/80">
-              Console
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
+              <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+              Engine Ready
             </span>
           )}
         </div>
 
         {/* Center Nav Links with Proper Spacing & No Line Breaks */}
-        <div className="hidden items-center justify-center gap-6 md:flex lg:gap-8 xl:gap-9">
+        <div className="hidden items-center justify-center gap-7 md:flex lg:gap-9">
           <button
             type="button"
             onClick={() => navigate("/", "#product")}
@@ -141,15 +142,6 @@ function App() {
           >
             Quick Start
           </button>
-
-          <a
-            href="/console"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Standalone View
-          </a>
         </div>
 
         {/* Right CTA / Badge */}
@@ -191,19 +183,19 @@ function App() {
 
       {/* Page Content: Console View vs Home View */}
       {isConsolePage ? (
-        <section className="relative z-10 mx-auto max-w-7xl px-6 pb-28 pt-8">
+        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-8">
           <div className="mb-10 text-center">
-            <p className="inline-block rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground backdrop-blur-md">
-              ⚡ Multi-Agent Research Environment
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs font-medium uppercase tracking-[0.28em] text-muted-foreground backdrop-blur-md">
+              Autonomous Research-as-a-Service
             </p>
             <h1
               className="mt-4 text-4xl font-normal tracking-tight sm:text-6xl"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
-              Research Console
+              Vanta Research Console
             </h1>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              Autonomous multi-agent research inside your infrastructure. Select a research mode, enter your query, and monitor evidence extraction in real time.
+              Multi-agent pipeline running inside your infrastructure. Decompose, validate, extract, and synthesize.
             </p>
           </div>
 

@@ -168,7 +168,7 @@ export function ResearchConsole() {
   };
 
   return (
-    <section id="console" className="relative z-10 mx-auto max-w-7xl px-6 pb-28">
+    <div id="console" className="w-full">
       <div className="liquid-glass rounded-[12px] p-6 sm:p-10">
         <div className="flex flex-col gap-4 border-b border-white/10 pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -384,6 +384,6 @@ export function ResearchConsole() {
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 }
