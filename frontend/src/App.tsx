@@ -143,7 +143,7 @@ function App() {
           </button>
 
           <a
-            href="http://localhost:8000"
+            href="/console"
             target="_blank"
             rel="noopener noreferrer"
             className="whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"

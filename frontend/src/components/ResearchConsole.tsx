@@ -40,6 +40,11 @@ const MODES: ModeOption[] = [
   },
 ];
 
+const API_BASE = (
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
+  "http://localhost:8000"
+).replace(/\/$/, "");
+
 export function ResearchConsole() {
   const [mode, setMode] = useState("research");
   const [rounds, setRounds] = useState(3);
@@ -82,7 +87,7 @@ export function ResearchConsole() {
     setStatusText("Dispatching multi-agent fleet...");
 
     try {
-      const res = await fetch("http://localhost:8000/v1/research", {
+      const res = await fetch(`${API_BASE}/v1/research`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +120,7 @@ export function ResearchConsole() {
     const interval = setInterval(async () => {
       elapsed += 2;
       try {
-        const res = await fetch(`http://localhost:8000/v1/research/${id}`, {
+        const res = await fetch(`${API_BASE}/v1/research/${id}`, {
           headers: { Authorization: `Bearer ${apiKey.trim()}` },
         });
         if (!res.ok) return;
