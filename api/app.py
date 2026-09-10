@@ -61,6 +61,7 @@ Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/console", response_class=HTMLResponse)
 async def read_index():
     static_file = os.path.join(os.path.dirname(__file__), "static", "index.html")
     with open(static_file, "r", encoding="utf-8") as f:

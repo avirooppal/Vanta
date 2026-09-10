@@ -1,5 +1,3 @@
-version: "3.9"
-
 x-api-env: &api-env
   DATABASE_URL: postgresql+asyncpg://postgres:${PG_PASSWORD:-devpassword}@postgres:5432/drapi
   REDIS_URL: redis://:${REDIS_PASSWORD:-devredispass}@redis:6379/0
@@ -26,6 +24,9 @@ services:
 
   worker:
     image: deep-research-api:latest
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
     command: python -m arq core.queue.worker.WorkerSettings
     environment:
       <<: *api-env

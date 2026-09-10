@@ -1,18 +1,10 @@
-import { Check, Copy } from "lucide-react";
-import { useState } from "react";
+import { Check, Copy, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "./components/ui/button";
 import { ResearchConsole } from "./components/ResearchConsole";
 
 const videoSource =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4";
-
-const navLinks = [
-  { label: "Product", href: "#product" },
-  { label: "Console", href: "#console" },
-  { label: "Agents", href: "#agents" },
-  { label: "Quick Start", href: "#quick-start" },
-  { label: "Standalone View", href: "http://localhost:8000" },
-];
 
 const features = [
   {
@@ -47,10 +39,39 @@ const cliSnippet = `uv run python cli.py submit "What are the latest advancement
   --mode study \\
   --api-key "sk-..."`;
 
-
 function App() {
+  const [currentPath, setCurrentPath] = useState(
+    typeof window !== "undefined" ? window.location.pathname : "/"
+  );
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const navigate = (path: string, hash?: string) => {
+    window.history.pushState({}, "", hash ? `${path}${hash}` : path);
+    setCurrentPath(path);
+    if (hash) {
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 50);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const isConsolePage = currentPath === "/console";
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      {/* Ambient Video Background */}
       <video
         className="fixed inset-0 z-0 h-full w-full object-cover"
         src={videoSource}
@@ -61,30 +82,78 @@ function App() {
         aria-hidden="true"
       />
 
-      <nav className="relative z-10 mx-auto flex max-w-7xl flex-row items-center justify-between px-8 py-6">
-        <div className="flex flex-1 items-center justify-start">
+      {/* Global Navbar */}
+      <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 sm:px-8">
+        {/* Brand Logo */}
+        <div className="flex items-center gap-3">
           <a
-            href="#product"
-            className="text-3xl tracking-tight text-foreground"
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/");
+            }}
+            className="text-3xl tracking-tight text-foreground transition-opacity hover:opacity-90"
             style={{ fontFamily: "'Instrument Serif', serif" }}
           >
             Vanta
           </a>
+          {isConsolePage && (
+            <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-xs font-medium tracking-wide text-white/80">
+              Console
+            </span>
+          )}
         </div>
 
-        <div className="hidden flex-1 items-center justify-center gap-9 md:flex">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
+        {/* Center Nav Links with Proper Spacing & No Line Breaks */}
+        <div className="hidden items-center justify-center gap-6 md:flex lg:gap-8 xl:gap-9">
+          <button
+            type="button"
+            onClick={() => navigate("/", "#product")}
+            className="cursor-pointer whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Product
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/console")}
+            className={`cursor-pointer whitespace-nowrap text-sm transition-colors ${
+              isConsolePage
+                ? "font-semibold text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Console
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/", "#agents")}
+            className="cursor-pointer whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Agents
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/", "#quick-start")}
+            className="cursor-pointer whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Quick Start
+          </button>
+
+          <a
+            href="http://localhost:8000"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="whitespace-nowrap text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Standalone View
+          </a>
         </div>
 
-        <div className="flex flex-1 items-center justify-end gap-4">
+        {/* Right CTA / Badge */}
+        <div className="flex items-center justify-end gap-3 sm:gap-4">
           <a
             href="https://www.foundrlist.com/product/vanta?utm_source=badge&utm_medium=embed"
             target="_blank"
@@ -94,149 +163,189 @@ function App() {
             <img
               src="https://www.foundrlist.com/api/badge/vanta"
               alt="Featured on FoundrList"
-              width="150"
-              height="48"
+              width="145"
+              height="46"
             />
           </a>
-          <Button size="nav" onClick={() => (window.location.href = "#console")}>
-            Launch Console
-          </Button>
+
+          {isConsolePage ? (
+            <Button
+              size="nav"
+              className="cursor-pointer gap-2"
+              onClick={() => navigate("/")}
+            >
+              <ArrowLeft className="size-3.5" />
+              Overview
+            </Button>
+          ) : (
+            <Button
+              size="nav"
+              className="cursor-pointer"
+              onClick={() => navigate("/console")}
+            >
+              Launch Console
+            </Button>
+          )}
         </div>
       </nav>
 
-      <section
-        id="product"
-        className="relative z-10 mx-auto flex min-h-[calc(100vh-96px)] max-w-7xl flex-col items-center justify-center px-6 pb-24 pt-24 text-center"
-      >
-        <p className="animate-fade-rise text-sm font-medium uppercase tracking-[0.32em] text-muted-foreground">
-          Privacy-first Research-as-a-Service API
-        </p>
-
-        <h1
-          className="animate-fade-rise mt-8 max-w-7xl text-5xl font-normal leading-[0.95] tracking-[-2.46px] sm:text-7xl md:text-8xl"
-          style={{ fontFamily: "'Instrument Serif', serif" }}
-        >
-          Autonomous research{" "}
-          <em className="not-italic text-muted-foreground">without</em>{" "}
-          hallucinated shortcuts.
-        </h1>
-
-        <p className="animate-fade-rise-delay mt-8 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Vanta runs a multi-round agent loop inside your own infrastructure,
-          building a verifiable evidence graph while keeping models, keys, and
-          research data under your control.
-        </p>
-
-        <div className="animate-fade-rise-delay-2 mt-12 flex flex-col items-center gap-4 sm:flex-row">
-          <Button
-            size="hero"
-            className="cursor-pointer"
-            onClick={() => (window.location.href = "#console")}
-          >
-            Launch Console
-          </Button>
-          <a
-            href="#quick-start"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Quick Start & CLI
-          </a>
-        </div>
-      </section>
-
-      {/* Interactive Research Console Section */}
-      <section id="console" className="relative z-10 mx-auto max-w-7xl px-6 pb-28">
-        <ResearchConsole />
-      </section>
-
-      <section
-        id="agents"
-        className="relative z-10 mx-auto grid max-w-7xl gap-4 px-6 pb-24 md:grid-cols-3"
-      >
-        {features.map((feature) => (
-          <article
-            key={feature.label}
-            className="liquid-glass rounded-[8px] px-6 py-7 text-left"
-          >
-            <p className="text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
-              {feature.label}
+      {/* Page Content: Console View vs Home View */}
+      {isConsolePage ? (
+        <section className="relative z-10 mx-auto max-w-7xl px-6 pb-28 pt-8">
+          <div className="mb-10 text-center">
+            <p className="inline-block rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground backdrop-blur-md">
+              ⚡ Multi-Agent Research Environment
             </p>
-            <h2
-              className="mt-5 text-3xl font-normal leading-none tracking-tight text-foreground"
+            <h1
+              className="mt-4 text-4xl font-normal tracking-tight sm:text-6xl"
               style={{ fontFamily: "'Instrument Serif', serif" }}
             >
-              {feature.title}
-            </h2>
-            <p className="mt-5 text-sm leading-6 text-muted-foreground">
-              {feature.body}
+              Research Console
+            </h1>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+              Autonomous multi-agent research inside your infrastructure. Select a research mode, enter your query, and monitor evidence extraction in real time.
             </p>
-          </article>
-        ))}
-      </section>
+          </div>
 
-      <section
-        id="graph"
-        className="relative z-10 mx-auto flex max-w-7xl flex-col gap-8 px-6 pb-24 lg:flex-row lg:items-end lg:justify-between"
-      >
-        <div className="max-w-3xl">
-          <p className="text-sm font-medium uppercase tracking-[0.32em] text-muted-foreground">
-            Evidence graph memory
-          </p>
-          <h2
-            className="mt-6 text-5xl font-normal leading-[0.95] tracking-[-1.6px] sm:text-6xl"
-            style={{ fontFamily: "'Instrument Serif', serif" }}
+          <ResearchConsole />
+        </section>
+      ) : (
+        <>
+          {/* Hero Section */}
+          <section
+            id="product"
+            className="relative z-10 mx-auto flex min-h-[calc(100vh-96px)] max-w-7xl flex-col items-center justify-center px-6 pb-24 pt-20 text-center"
           >
-            Standard LLMs forget. Vanta compounds.
-          </h2>
-        </div>
-        <p className="max-w-md text-base leading-relaxed text-muted-foreground">
-          Each extracted fact is embedded, linked, and stored globally, so teams
-          can search across prior sessions instead of paying for the same
-          research twice.
-        </p>
-      </section>
+            <p className="animate-fade-rise text-sm font-medium uppercase tracking-[0.32em] text-muted-foreground">
+              Privacy-first Research-as-a-Service API
+            </p>
 
-      <section
-        id="quick-start"
-        className="relative z-10 mx-auto max-w-7xl px-6 pb-28"
-      >
-        <div className="liquid-glass rounded-[8px] p-5 sm:p-8 lg:p-10">
-          <div className="flex flex-col gap-5 border-b border-white/10 pb-8 lg:flex-row lg:items-end lg:justify-between">
-            <div>
+            <h1
+              className="animate-fade-rise mt-8 max-w-7xl text-5xl font-normal leading-[0.95] tracking-[-2.46px] sm:text-7xl md:text-8xl"
+              style={{ fontFamily: "'Instrument Serif', serif" }}
+            >
+              Autonomous research{" "}
+              <em className="not-italic text-muted-foreground">without</em>{" "}
+              hallucinated shortcuts.
+            </h1>
+
+            <p className="animate-fade-rise-delay mt-8 max-w-3xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Vanta runs a multi-round agent loop inside your own infrastructure,
+              building a verifiable evidence graph while keeping models, keys, and
+              research data under your control.
+            </p>
+
+            <div className="animate-fade-rise-delay-2 mt-12 flex flex-col items-center gap-4 sm:flex-row">
+              <Button
+                size="hero"
+                className="cursor-pointer"
+                onClick={() => navigate("/console")}
+              >
+                Launch Console
+              </Button>
+              <button
+                type="button"
+                onClick={() => navigate("/", "#quick-start")}
+                className="cursor-pointer text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Quick Start & CLI
+              </button>
+            </div>
+          </section>
+
+          {/* Agents / Features Section */}
+          <section
+            id="agents"
+            className="relative z-10 mx-auto grid max-w-7xl gap-4 px-6 pb-24 md:grid-cols-2 lg:grid-cols-4"
+          >
+            {features.map((feature) => (
+              <article
+                key={feature.label}
+                className="liquid-glass rounded-[8px] px-6 py-7 text-left"
+              >
+                <p className="text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
+                  {feature.label}
+                </p>
+                <h2
+                  className="mt-5 text-3xl font-normal leading-none tracking-tight text-foreground"
+                  style={{ fontFamily: "'Instrument Serif', serif" }}
+                >
+                  {feature.title}
+                </h2>
+                <p className="mt-5 text-sm leading-6 text-muted-foreground">
+                  {feature.body}
+                </p>
+              </article>
+            ))}
+          </section>
+
+          {/* Evidence Graph Memory Section */}
+          <section
+            id="graph"
+            className="relative z-10 mx-auto flex max-w-7xl flex-col gap-8 px-6 pb-24 lg:flex-row lg:items-end lg:justify-between"
+          >
+            <div className="max-w-3xl">
               <p className="text-sm font-medium uppercase tracking-[0.32em] text-muted-foreground">
-                How to Run / Quick Start
+                Evidence graph memory
               </p>
               <h2
                 className="mt-6 text-5xl font-normal leading-[0.95] tracking-[-1.6px] sm:text-6xl"
                 style={{ fontFamily: "'Instrument Serif', serif" }}
               >
-                Deploy the stack. Submit a job.
+                Standard LLMs forget. Vanta compounds.
               </h2>
             </div>
-            <p className="max-w-md text-sm leading-6 text-muted-foreground">
-              Vanta is designed to run from your own cloud with Docker and a
-              provider key you control. Source is available at{" "}
-              <a
-                href="https://github.com/avirooppal/Vanta-Deep-Research-API"
-                target="_blank"
-                rel="noreferrer"
-                className="text-foreground underline decoration-white/25 underline-offset-4 transition-colors hover:text-white/75"
-              >
-                avirooppal/Vanta-Deep-Research-API
-              </a>
-              .
+            <p className="max-w-md text-base leading-relaxed text-muted-foreground">
+              Each extracted fact is embedded, linked, and stored globally, so teams
+              can search across prior sessions instead of paying for the same
+              research twice.
             </p>
-          </div>
+          </section>
 
-          <div className="mt-8 grid gap-5 lg:grid-cols-2">
-            <CodeBlock title="Deploying the Stack" code={deploySnippet} />
-            <CodeBlock
-              title="Running a Research Job via CLI"
-              code={cliSnippet}
-            />
-          </div>
-        </div>
-      </section>
+          {/* Quick Start & Deployment Section */}
+          <section
+            id="quick-start"
+            className="relative z-10 mx-auto max-w-7xl px-6 pb-28"
+          >
+            <div className="liquid-glass rounded-[8px] p-5 sm:p-8 lg:p-10">
+              <div className="flex flex-col gap-5 border-b border-white/10 pb-8 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <p className="text-sm font-medium uppercase tracking-[0.32em] text-muted-foreground">
+                    How to Run / Quick Start
+                  </p>
+                  <h2
+                    className="mt-6 text-5xl font-normal leading-[0.95] tracking-[-1.6px] sm:text-6xl"
+                    style={{ fontFamily: "'Instrument Serif', serif" }}
+                  >
+                    Deploy the stack. Submit a job.
+                  </h2>
+                </div>
+                <p className="max-w-md text-sm leading-6 text-muted-foreground">
+                  Vanta is designed to run from your own cloud with Docker and a
+                  provider key you control. Source is available at{" "}
+                  <a
+                    href="https://github.com/avirooppal/Vanta-Deep-Research-API"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-foreground underline decoration-white/25 underline-offset-4 transition-colors hover:text-white/75"
+                  >
+                    avirooppal/Vanta-Deep-Research-API
+                  </a>
+                  .
+                </p>
+              </div>
+
+              <div className="mt-8 grid gap-5 lg:grid-cols-2">
+                <CodeBlock title="Deploying the Stack" code={deploySnippet} />
+                <CodeBlock
+                  title="Running a Research Job via CLI"
+                  code={cliSnippet}
+                />
+              </div>
+            </div>
+          </section>
+        </>
+      )}
 
       {/* Floating GitHub button — bottom-left */}
       <a
